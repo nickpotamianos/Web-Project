@@ -1,0 +1,172 @@
+/* General Reset */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* Typography Imports */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+/* Root Variables for Color Scheme */
+:root {
+    --color-primary: #005f73;
+    --color-secondary: #0a9396;
+    --color-accent: #94d2bd;
+    --color-light: #e9d8a6;
+    --color-dark: #001219;
+    --color-text: #e0fbfc;
+}
+
+/* Global Styles */
+body {
+    font-family: 'Roboto', sans-serif;
+    color: var(--color-text);
+    background-color: var(--color-dark);
+    line-height: 1.6;
+}
+
+/* Navigation Styles */
+nav {
+    background: var(--color-primary);
+    color: var(--color-text);
+    padding: 1rem 0;
+}
+
+nav ul {
+    list-style-type: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 2rem;
+}
+
+nav a {
+    color: var(--color-text);
+    text-decoration: none;
+    transition: color 0.3s ease-in-out;
+}
+
+nav a:hover,
+nav a:focus {
+    color: var(--color-accent);
+}
+
+/* Main Area Styles */
+main {
+    padding: 2rem 0;
+}
+
+h1 {
+    font-size: 3rem;
+    color: var(--color-light);
+}
+
+h2 {
+    font-size: 2rem;
+    color: var(--color-secondary);
+}
+
+p {
+    color: var(--color-light);
+    font-size: 1.1rem;
+}
+
+/* Animation for Fade-in Sections */
+@keyframes fadeInUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.animated-fade-in {
+    animation: fadeInUp 1s ease-in-out forwards;
+    animation-delay: 0.3s;
+    opacity: 0; /* Start invisible */
+}
+
+/* Image and Figcaption Styles */
+figure {
+    margin: 2rem 0;
+    text-align: center;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+}
+
+figcaption {
+    color: var(--color-accent);
+    font-size: 0.9rem;
+}
+
+/* Form Styles */
+form {
+    margin-top: 2rem;
+}
+
+input[type='text'],
+input[type='email'] {
+    width: 100%;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    border: none;
+    border-radius: 5px;
+}
+
+button {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: var(--color-secondary);
+    color: var(--color-dark);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+}
+
+button:hover,
+button:focus {
+    background-color: var(--color-accent);
+}
+
+/* Footer Styles */
+footer {
+    background: var(--color-primary);
+    color: var(--color-text);
+    text-align: center;
+    padding: 1rem 0;
+}
+
+footer a {
+    color: var(--color-light);
+    transition: color 0.3s ease-in-out;
+}
+
+footer a:hover,
+footer a:focus {
+    color: var(--color-accent);
+}
+
+/* Responsive Styles */
+@media screen and (max-width: 768px) {
+    nav ul {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    h1 {
+        font-size: 2.5rem;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+    }
+}

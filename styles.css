@@ -1,172 +1,190 @@
-/* General Reset */
-* {
+/* Reset and base styles */
+*, *::before, *::after {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
 }
 
-/* Typography Imports */
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
-
-/* Root Variables for Color Scheme */
-:root {
-    --color-primary: #005f73;
-    --color-secondary: #0a9396;
-    --color-accent: #94d2bd;
-    --color-light: #e9d8a6;
-    --color-dark: #001219;
-    --color-text: #e0fbfc;
-}
-
-/* Global Styles */
-body {
+body, h1, h2, h3, p, a {
     font-family: 'Roboto', sans-serif;
-    color: var(--color-text);
-    background-color: var(--color-dark);
-    line-height: 1.6;
 }
 
-/* Navigation Styles */
+
+
+/* Hero section with animation */
+.hero-section {
+    background: url('https://images.unsplash.com/photo-1617699755337-c79e46f7eb0e?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D') no-repeat center center/cover;
+    height: 100vh;
+    position: relative;
+}
+
+.logo img {
+    width: 40px;
+    height: 40px;
+}
+.tent {
+    width: 30px;
+    height: 30px;
+}
+
+.overlay {
+
+    background-color: rgba(0, 0, 0, 0.7);
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
 nav {
-    background: var(--color-primary);
-    color: var(--color-text);
-    padding: 1rem 0;
-}
-
-nav ul {
-    list-style-type: none;
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    padding: 0 2rem;
+    padding: 1rem 2rem;
 }
 
-nav a {
-    color: var(--color-text);
+nav.sticky {
+    position: fixed;
+    height: 72px;
+    top: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.5); /* or any other color with transparency */
+    z-index: 100; /* Ensure it's above other content */
+}
+
+
+.nav-links li {
+    display: inline;
+    margin-left: 1rem;
+}
+
+.nav-links li a {
+    display: inline-block;
+    padding: 10px;
+    border-radius: 5px;
+    transition: background 0.3s;
+}
+
+.nav-links li a .login-icon {
+    vertical-align: middle;
+    margin-left: 5px;
+    width: 25px;
+    height: 25px;
+    margin-top: -3px;
+}
+
+.nav-links li a:hover {
+    background: rgba(80, 80, 80, 0.7);
+}
+
+.nav-links a {
+    color: #fff;
     text-decoration: none;
-    transition: color 0.3s ease-in-out;
+    text-transform: uppercase;
 }
 
-nav a:hover,
-nav a:focus {
-    color: var(--color-accent);
-}
+.hero-content {
+    position: static;
+    text-align: center;
+    color: white;
+    animation: enterScreen 1s ease-out forwards;
+    padding-bottom: 30px;
+    }
 
-/* Main Area Styles */
-main {
-    padding: 2rem 0;
-}
-
-h1 {
-    font-size: 3rem;
-    color: var(--color-light);
-}
-
-h2 {
-    font-size: 2rem;
-    color: var(--color-secondary);
-}
-
-p {
-    color: var(--color-light);
-    font-size: 1.1rem;
-}
-
-/* Animation for Fade-in Sections */
-@keyframes fadeInUp {
-    from {
-        transform: translateY(20px);
+@keyframes enterScreen {
+    0% {
+        transform: translateY(-100px);
         opacity: 0;
     }
-    to {
+    100% {
         transform: translateY(0);
         opacity: 1;
     }
 }
 
-.animated-fade-in {
-    animation: fadeInUp 1s ease-in-out forwards;
-    animation-delay: 0.3s;
-    opacity: 0; /* Start invisible */
-}
-
-/* Image and Figcaption Styles */
-figure {
-    margin: 2rem 0;
-    text-align: center;
-}
-
-img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 10px;
-}
-
-figcaption {
-    color: var(--color-accent);
-    font-size: 0.9rem;
-}
-
-/* Form Styles */
-form {
-    margin-top: 2rem;
-}
-
-input[type='text'],
-input[type='email'] {
-    width: 100%;
-    padding: 0.75rem;
-    margin-bottom: 1rem;
+.cta {
+    background-color: #6495ed; /* Logo color */
     border: none;
-    border-radius: 5px;
-}
-
-button {
-    width: 100%;
-    padding: 0.75rem;
-    background-color: var(--color-secondary);
-    color: var(--color-dark);
-    border: none;
-    border-radius: 5px;
+    color: white;
+    padding: 10px 25px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 30px;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    display: inline-block;
     cursor: pointer;
-    transition: background-color 0.3s ease-in-out;
+    margin-top:15px;
 }
 
-button:hover,
-button:focus {
-    background-color: var(--color-accent);
+.cta:hover {
+    background-color: #5679c4; /* A darker shade for hover effect */
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.3);
+    transform: translateY(-2px);
 }
 
-/* Footer Styles */
-footer {
-    background: var(--color-primary);
-    color: var(--color-text);
+.cta:active {
+    background-color: #3d5a80; /* An even darker shade for active state */
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+    transform: translateY(1px);
+}
+
+/* Information sections */
+.info-section, .grid-section, .action-section {
+    padding: 3rem;
     text-align: center;
-    padding: 1rem 0;
 }
 
-footer a {
-    color: var(--color-light);
-    transition: color 0.3s ease-in-out;
+.grid-section {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
 }
 
-footer a:hover,
-footer a:focus {
-    color: var(--color-accent);
+.card {
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: transform 0.3s;
 }
 
-/* Responsive Styles */
-@media screen and (max-width: 768px) {
-    nav ul {
-        flex-direction: column;
-        align-items: flex-start;
-    }
+.card:hover {
+    transform: translateY(-10px);
+}
 
-    h1 {
-        font-size: 2.5rem;
-    }
+::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+}
 
-    h2 {
-        font-size: 1.5rem;
+::-webkit-scrollbar-thumb {
+    background: rgba(90, 90, 90);
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+
+
+/* Footer */
+footer {
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding: 1rem;
+}
+
+/* Responsive design */
+@media only screen and (max-width: 768px) {
+    .grid-section {
+        grid-template-columns: 1fr;
     }
 }

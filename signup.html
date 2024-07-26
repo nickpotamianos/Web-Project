@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <title>Log In</title>
+    <title>Register</title>
     <link rel="icon" type="image/png" href="logo.png">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -24,7 +24,7 @@
 
             <ul class="nav-links">
                 <li><a href="index.html"><img src="home.png" alt="Home" class="tent"></a></li>
-                <li><a href="signup.html">Register</a></li>
+                <li><a href="login.html">Login<img src="login2.png" alt="Login Icon" class="login-icon"></a></li>
             </ul>
         </nav>
     </div>
@@ -32,13 +32,27 @@
 <div class="register-box">
     <!-- multistep form -->
     <form id="msform" class="form">
-       <!-- fieldsets -->
+        <!-- progressbar -->
+        <ul id="progressbar">
+            <li class="active">Account Setup</li>
+            <li>Personal Details</li>
+        </ul>
+        <!-- fieldsets -->
         <fieldset>
-            <h2 class="fs-title">Login to your account</h2>
+            <h2 class="fs-title">Create your account</h2>
             <h3 class="fs-subtitle">Please fill below</h3>
             <input type="text" name="email" placeholder="Email" />
             <input type="password" name="pass" placeholder="Password" />
-            <input type="button" name="Log In" class="next action-button" value="Next" />
+            <input type="password" name="cpass" placeholder="Confirm Password" />
+            <input type="button" name="next" class="next action-button" value="Next" />
+        </fieldset>
+        <fieldset>
+            <h2 class="fs-title">Personal Details</h2>
+            <h3 class="fs-subtitle">We will never sell it</h3>
+            <input type="text" name="fname" placeholder="First Name" />
+            <input type="text" name="lname" placeholder="Last Name" />
+            <input type="text" name="phone" placeholder="Phone" />
+            <input type="button" class="finish action-button" value="Finish" />
         </fieldset>
         </form>
 </div>

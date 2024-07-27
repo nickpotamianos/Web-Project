@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Register</title>
+    <link rel="icon" type="image/png" href="../public/images/logo.png">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
+    <link href="../public/css/styles.css" rel="stylesheet">
+    <link href="../public/css/signup.css" rel="stylesheet">
+
+</head>
+
+<body>
+<header class="hero-section">
+    <div class="overlay">
+        <nav>
+            <div class="logo">
+                <a href="index.html">
+                    <img src="../public/images/logo.png" alt="Logo">
+                </a>
+            </div>
+
+            <ul class="nav-links">
+                <li><a href="index.html"><img src="../public/images/home.png" alt="Home" class="tent"></a></li>
+                <li><a href="login.html">Login<img src="../public/images/login2.png" alt="Login Icon" class="login-icon"></a></li>
+            </ul>
+        </nav>
+    </div>
+</header>
+<div class="register-box">
+    <!-- multistep form -->
+    <form id="msform" class="form">
+        <!-- progressbar -->
+        <ul id="progressbar">
+            <li class="active">Account Setup</li>
+            <li>Personal Details</li>
+        </ul>
+        <!-- fieldsets -->
+        <fieldset>
+            <h2 class="fs-title">Create your account</h2>
+            <h3 class="fs-subtitle">Please fill below</h3>
+            <input type="text" name="email" placeholder="Email" />
+            <input type="password" name="pass" placeholder="Password" />
+            <input type="password" name="cpass" placeholder="Confirm Password" />
+            <input type="button" name="next" class="next action-button" value="Next" />
+        </fieldset>
+        <fieldset>
+            <h2 class="fs-title">Personal Details</h2>
+            <h3 class="fs-subtitle">We will never sell it</h3>
+            <input type="text" name="fname" placeholder="First Name" />
+            <input type="text" name="lname" placeholder="Last Name" />
+            <input type="text" name="phone" placeholder="Phone" />
+            <input type="button" class="finish action-button" value="Register" />
+        </fieldset>
+        </form>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
+<script src="../public/js/signup.js"></script>
+</body>
+</html>

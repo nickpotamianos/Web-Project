@@ -16,11 +16,12 @@ $(document).ready(function() {
         $.ajax({
             type: "POST",
             url: "http://localhost:3000/login", // Ensure this matches your server route and port
-            data: data,
+            data: JSON.stringify(data),
+            contentType: "application/json",
             success: function(response) {
                 console.log("Login successful: ", response); // Debug log
                 // Redirect to the dashboard or another page on success
-                window.location.href = 'citizen_dashboard.html';
+                window.location.href = 'admin_dashboard.html';
             },
             error: function(xhr, status, error) {
                 console.error('Login failed: ' + error);

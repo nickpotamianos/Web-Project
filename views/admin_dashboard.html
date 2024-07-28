@@ -2,9 +2,68 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="icon" type="image/png" href="/images/logo.png">
+    <link rel="stylesheet" href="/css/admin_dashboard.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 </head>
 <body>
+<header>
+    <h1>Admin Dashboard</h1>
+    <nav>
+        <ul>
+            <li><a href="#items">Items</a></li>
+            <li><a href="#categories">Categories</a></li>
+            <li><a href="#requests">Requests</a></li>
+            <li><a href="#offers">Offers</a></li>
+            <li><a href="#tasks">Tasks</a></li>
+            <li><a href="#announcements">Announcements</a></li>
+        </ul>
+        <button id="logoutButton">Logout</button>
+    </nav>
+</header>
+<main>
+    <section id="items">
+        <h2>Items Management</h2>
+        <form id="itemForm">
+            <input type="text" id="itemName" placeholder="Item Name" required>
+            <input type="number" id="itemQuantity" placeholder="Quantity" required>
+            <select id="itemCategory">
+                <!-- Options will be populated dynamically -->
+            </select>
+            <button type="submit">Add Item</button>
+        </form>
+        <div id="itemList">
+            <!-- Item list will be displayed here -->
+        </div>
+    </section>
+    <section id="categories">
+        <h2>Categories Management</h2>
+        <form id="categoryForm">
+            <input type="text" id="categoryName" placeholder="Category Name" required>
+            <button type="submit">Add Category</button>
+        </form>
+        <div id="categoryList">
+            <!-- Category list will be displayed here -->
+        </div>
+    </section>
+    <section id="upload">
+        <h2>Upload JSON</h2>
+        <form id="uploadForm" enctype="multipart/form-data">
+            <input type="file" id="jsonFile" name="jsonFile" accept=".json" required>
+            <button type="submit">Upload JSON</button>
+        </form>
+        <button id="loadFromUrlButton">Load Data from URL</button>
+    </section>
+    <section id="map">
+        <h2>Map View</h2>
+        <div id="mapid" style="height: 500px;"></div>
+    </section>
+    <!-- Repeat similar sections for requests, offers, tasks, announcements -->
+</main>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="/js/admin_dashboard.js"></script>
 
 </body>
 </html>

@@ -12,6 +12,7 @@ const fs = require('fs');
 const userRoutes = require('./routes/users');
 const itemRoutes = require('./routes/items');
 const categoryRoutes = require('./routes/categories');
+const warehouseRoutes = require('./routes/warehouse');
 
 const app = express();
 
@@ -71,6 +72,7 @@ function isAdmin(req, res, next) {
 app.use('/api/items', itemRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/warehouse', warehouseRoutes);
 
 // Serve static files from the "public" directory
 app.use(express.static(path.join(__dirname, 'public')));
@@ -139,7 +141,7 @@ app.post('/login', (req, res) => {
 });
 
 // Handle user logout
-app.post('/logout', (req, res) => {
+app.post('/api/logout', (req, res) => {
     req.session.destroy((err) => {
         if (err) {
             return res.status(500).json({ error: 'Error logging out' });

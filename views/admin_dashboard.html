@@ -12,15 +12,17 @@
 <header>
     <h1>Admin Dashboard</h1>
     <nav>
-        <ul>
-            <li><a href="#items">Items</a></li>
-            <li><a href="#categories">Categories</a></li>
-            <li><a href="#requests">Requests</a></li>
-            <li><a href="#offers">Offers</a></li>
-            <li><a href="#tasks">Tasks</a></li>
-            <li><a href="#announcements">Announcements</a></li>
-        </ul>
-        <button id="logoutButton">Logout</button>
+        <div class="nav-container">
+            <ul class="nav-items">
+                <li><a href="#items">Items</a></li>
+                <li><a href="#categories">Categories</a></li>
+                <li><a href="#requests">Requests</a></li>
+                <li><a href="#offers">Offers</a></li>
+                <li><a href="#tasks">Tasks</a></li>
+                <li><a href="#announcements">Announcements</a></li>
+            </ul>
+        </div>
+        <button id="logoutButton" class="logout-button">Logout</button>
     </nav>
 </header>
 <main>
@@ -53,6 +55,7 @@
         <form id="uploadForm" enctype="multipart/form-data">
             <input type="file" id="jsonFile" name="jsonFile" accept=".json" required>
             <button type="submit">Upload JSON</button>
+            <button type="button" id="clearFileButton">Clear File</button>
         </form>
         <button id="loadFromUrlButton">Load Data from URL</button>
     </section>
@@ -60,10 +63,10 @@
         <h2>Map View</h2>
         <div id="mapid" style="height: 500px;"></div>
     </section>
+
     <!-- Repeat similar sections for requests, offers, tasks, announcements -->
 </main>
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script src="/js/admin_dashboard.js"></script>
-
 </body>
 </html>

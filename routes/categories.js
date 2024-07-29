@@ -28,7 +28,7 @@ router.post('/', (req, res) => {
             res.status(500).json({ error: 'Error adding category' });
             return;
         }
-        res.status(201).json({ message: 'Category added successfully' });
+        res.status(201).json({ message: 'Category added successfully', categoryId: results.insertId });
     });
 });
 
@@ -36,6 +36,9 @@ router.post('/', (req, res) => {
 router.put('/:id', (req, res) => {
     const { id } = req.params;
     const { name } = req.body;
+    if (!name) {
+        return res.status(400).json({ error: 'Missing required fields' });
+    }
     const sql = 'UPDATE categories SET name = ? WHERE id = ?';
     connection.query(sql, [name, id], (err, results) => {
         if (err) {
@@ -47,17 +50,58 @@ router.put('/:id', (req, res) => {
     });
 });
 
-// Delete a category
+// Delete a category along with its items and item details
 router.delete('/:id', (req, res) => {
     const { id } = req.params;
-    const sql = 'DELETE FROM categories WHERE id = ?';
-    connection.query(sql, [id], (err, results) => {
-        if (err) {
-            console.error('Database error: ', err);
-            res.status(500).json({ error: 'Error deleting category' });
+
+    const deleteItemDetailsSql = 'DELETE FROM item_details WHERE item_id IN (SELECT id FROM items WHERE category_id = ?)';
+    const deleteItemsSql = 'DELETE FROM items WHERE category_id = ?';
+    const deleteCategorySql = 'DELETE FROM categories WHERE id = ?';
+
+    connection.beginTransaction((transactionErr) => {
+        if (transactionErr) {
+            console.error('Transaction error: ', transactionErr);
+            res.status(500).json({ error: 'Error starting transaction' });
             return;
         }
-        res.status(200).json({ message: 'Category deleted successfully' });
+
+        connection.query(deleteItemDetailsSql, [id], (err, results) => {
+            if (err) {
+                return connection.rollback(() => {
+                    console.error('Database error: ', err);
+                    res.status(500).json({ error: 'Error deleting item details' });
+                });
+            }
+
+            connection.query(deleteItemsSql, [id], (err, results) => {
+                if (err) {
+                    return connection.rollback(() => {
+                        console.error('Database error: ', err);
+                        res.status(500).json({ error: 'Error deleting items' });
+                    });
+                }
+
+                connection.query(deleteCategorySql, [id], (err, results) => {
+                    if (err) {
+                        return connection.rollback(() => {
+                            console.error('Database error: ', err);
+                            res.status(500).json({ error: 'Error deleting category' });
+                        });
+                    }
+
+                    connection.commit((commitErr) => {
+                        if (commitErr) {
+                            return connection.rollback(() => {
+                                console.error('Commit error: ', commitErr);
+                                res.status(500).json({ error: 'Error committing transaction' });
+                            });
+                        }
+
+                        res.status(200).json({ message: 'Category deleted successfully' });
+                    });
+                });
+            });
+        });
     });
 });
 

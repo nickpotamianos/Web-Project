@@ -24,7 +24,6 @@ router.get('/', (req, res) => {
                 return res.status(500).json({ error: 'Error fetching item details' });
             }
 
-            // Filter out invalid details
             const validDetails = details.filter(detail => detail.detail_name || detail.detail_value);
 
             const detailsByItemId = validDetails.reduce((acc, detail) => {
@@ -57,7 +56,7 @@ router.post('/', (req, res) => {
             console.error('Database error: ', err);
             return res.status(500).json({ error: 'Error adding item' });
         }
-        res.status(201).json({ message: 'Item added successfully' });
+        res.status(201).json({ message: 'Item added successfully', itemId: results.insertId });
     });
 });
 
@@ -78,17 +77,49 @@ router.put('/:id', (req, res) => {
     });
 });
 
+// Update item quantity
+router.put('/:id/quantity', (req, res) => {
+    const { id } = req.params;
+    const { quantity } = req.body;
+
+    if (quantity === undefined) {
+        return res.status(400).json({ error: 'Missing quantity' });
+    }
+
+    const sql = 'UPDATE items SET quantity = ? WHERE id = ?';
+    connection.query(sql, [quantity, id], (err, results) => {
+        if (err) {
+            console.error('Database error: ', err);
+            return res.status(500).json({ error: 'Error updating item quantity' });
+        }
+        res.status(200).json({ message: 'Item quantity updated successfully' });
+    });
+});
+
 // Delete an item
 router.delete('/:id', (req, res) => {
     const { id } = req.params;
-    const sql = 'DELETE FROM items WHERE id = ?';
-    connection.query(sql, [id], (err, results) => {
+
+    // Delete item details first
+    const deleteDetailsSql = 'DELETE FROM item_details WHERE item_id = ?';
+    connection.query(deleteDetailsSql, [id], (err) => {
         if (err) {
-            console.error('Database error: ', err);
-            return res.status(500).json({ error: 'Error deleting item' });
+            console.error('Database error deleting item details:', err);
+            return res.status(500).json({ error: 'Error deleting item details' });
         }
-        res.status(200).json({ message: 'Item deleted successfully' });
+
+        // Then delete the item
+        const deleteItemSql = 'DELETE FROM items WHERE id = ?';
+        connection.query(deleteItemSql, [id], (err) => {
+            if (err) {
+                console.error('Database error deleting item:', err);
+                return res.status(500).json({ error: 'Error deleting item' });
+            }
+
+            res.status(200).json({ message: 'Item deleted successfully' });
+        });
     });
 });
+
 
 module.exports = router;

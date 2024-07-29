@@ -8,26 +8,65 @@ header {
     background-color: #333;
     color: #fff;
     padding: 10px 0;
-    text-align: center;
 }
 
 header h1 {
     margin: 0;
+    text-align: center;
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+}
+
+.nav-container {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
 }
 
 nav ul {
     list-style: none;
-    padding: 0;
+    padding-left: 60px;
+    display: flex;
+    margin: 0;
+    justify-content: center;
 }
 
 nav ul li {
-    display: inline;
-    margin: 0 10px;
+    margin: 0 5px; /* Decrease margin between items */
 }
 
 nav ul li a {
     color: #fff;
     text-decoration: none;
+    padding: 8px 15px; /* Adjust padding for a more compact look */
+    border-radius: 5px;
+}
+
+nav ul li a:hover {
+    background-color: #615e5e;
+    color: white;
+}
+
+.logout-button {
+    background-color: #c53131; /* Red background */
+    color: white; /* White text */
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 16px;
+    cursor: pointer;
+    flex-shrink: 0;
+    width: auto; /* Auto width */
+}
+
+.logout-button:hover {
+    background-color: #831e1e; /* Darker red on hover */
 }
 
 main {
@@ -91,4 +130,46 @@ button:hover {
 #mapid {
     height: 500px;
     margin-top: 20px;
+}
+.category {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border: 1px solid #ccc;
+    margin-bottom: 5px;
+    background-color: #f9f9f9;
+    vertical-align: center;
+}
+
+.delete-category {
+    background-color: #c53131;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    flex-shrink: 0;
+    width: auto;
+}
+
+.delete-category:hover {
+    background-color: #831e1e;
+}
+.update-quantity {
+    background-color: #2575fc;
+    width: auto;
+}
+.update-quantity:hover {
+    background-color: #1f5fd1;
+}
+.item-quantity{
+    width:auto
+}
+.delete-item{
+    background-color: #c53131;
+    width:auto
+}
+.delete-item:hover {
+    background-color: #831e1e;
+    width:auto
 }

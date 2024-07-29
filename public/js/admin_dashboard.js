@@ -190,33 +190,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     button.addEventListener('click', deleteItem);
                 });
 
-                // Add event listeners for quantity inputs
-                document.querySelectorAll('.item-quantity').forEach(input => {
-                    input.addEventListener('change', updateQuantity);
-                });
+
             })
             .catch(error => console.error('Error fetching items:', error));
     }
 
-    function updateQuantity(event) {
-        const itemId = event.target.getAttribute('data-id');
-        const newQuantity = event.target.value;
 
-        fetch(`/api/items/${itemId}/quantity`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ quantity: newQuantity })
-        })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Item quantity updated successfully:', data);
-                // Refresh the item quantity display
-                loadItems();
-            })
-            .catch(error => console.error('Error updating item quantity:', error));
-    }
 
     function updateItemQuantity(event) {
         const itemId = event.target.getAttribute('data-id');
@@ -391,43 +370,6 @@ document.addEventListener('DOMContentLoaded', () => {
             })
             .catch(error => console.error('Error:', error));
     });
-
-    // Warehouse Management
-    function loadWarehouse() {
-        fetch('/api/warehouse')
-            .then(response => response.json())
-            .then(data => {
-                warehouseList.innerHTML = '';
-                data.forEach(item => {
-                    const itemDiv = document.createElement('div');
-                    itemDiv.className = 'item';
-                    itemDiv.textContent = `${item.name} (Quantity: ${item.quantity})`;
-                    warehouseList.appendChild(itemDiv);
-
-                    const removeButton = document.createElement('button');
-                    removeButton.textContent = 'Remove';
-                    removeButton.addEventListener('click', () => {
-                        removeItemFromWarehouse(item.id);
-                    });
-                    itemDiv.appendChild(removeButton);
-                });
-            })
-            .catch(error => console.error('Error fetching warehouse items:', error));
-    }
-
-    function removeItemFromWarehouse(itemId) {
-        fetch(`/api/warehouse/${itemId}`, {
-            method: 'DELETE'
-        })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Item removed from warehouse successfully:', data);
-                loadWarehouse();
-            })
-            .catch(error => console.error('Error removing item from warehouse:', error));
-    }
-
-    loadWarehouse();
 
     logoutButton.addEventListener('click', function() {
         fetch('/api/logout', {

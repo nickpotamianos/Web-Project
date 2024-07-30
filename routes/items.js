@@ -97,26 +97,320 @@ router.put('/:id/quantity', (req, res) => {
 });
 
 // Delete an item
+// Delete an individual item
 router.delete('/:id', (req, res) => {
     const { id } = req.params;
 
-    // Delete item details first
-    const deleteDetailsSql = 'DELETE FROM item_details WHERE item_id = ?';
-    connection.query(deleteDetailsSql, [id], (err) => {
+    connection.beginTransaction((err) => {
         if (err) {
-            console.error('Database error deleting item details:', err);
-            return res.status(500).json({ error: 'Error deleting item details' });
+            console.error('Error starting transaction:', err);
+            return res.status(500).json({ error: 'Error starting transaction' });
         }
 
-        // Then delete the item
-        const deleteItemSql = 'DELETE FROM items WHERE id = ?';
-        connection.query(deleteItemSql, [id], (err) => {
+                // Delete item details
+                const deleteDetailsSql = 'DELETE FROM item_details WHERE item_id = ?';
+                connection.query(deleteDetailsSql, [id], (err) => {
+                    if (err) {
+                        return connection.rollback(() => {
+                            console.error('Error deleting item details:', err);
+                            res.status(500).json({ error: 'Error deleting item details' });
+                        });
+                    }
+
+                    // Delete from warehouse
+                    const deleteWarehouseSql = 'DELETE FROM warehouse WHERE item_id = ?';
+                    connection.query(deleteWarehouseSql, [id], (err) => {
+                        if (err) {
+                            return connection.rollback(() => {
+                                console.error('Error deleting from warehouse:', err);
+                                res.status(500).json({ error: 'Error deleting from warehouse' });
+                            });
+                        }
+
+                        // Finally, delete the item
+                        const deleteItemSql = 'DELETE FROM items WHERE id = ?';
+                        connection.query(deleteItemSql, [id], (err) => {
+                            if (err) {
+                                return connection.rollback(() => {
+                                    console.error('Error deleting item:', err);
+                                    res.status(500).json({ error: 'Error deleting item' });
+                                });
+                            }
+
+                            connection.commit((err) => {
+                                if (err) {
+                                    return connection.rollback(() => {
+                                        console.error('Error committing transaction:', err);
+                                        res.status(500).json({ error: 'Error committing transaction' });
+                                    });
+                                }
+                                res.status(200).json({ message: 'Item deleted successfully' });
+                            });
+                        });
+                    });
+                });
+            });
+
+});
+
+// Delete a category and all its items
+router.delete('/category/:categoryId', (req, res) => {
+    const { categoryId } = req.params;
+
+    connection.beginTransaction((err) => {
+        if (err) {
+            console.error('Error starting transaction:', err);
+            return res.status(500).json({ error: 'Error starting transaction' });
+        }
+
+        // Get all items in the category
+        const getItemsSql = 'SELECT id FROM items WHERE category_id = ?';
+        connection.query(getItemsSql, [categoryId], (err, items) => {
             if (err) {
-                console.error('Database error deleting item:', err);
-                return res.status(500).json({ error: 'Error deleting item' });
+                return connection.rollback(() => {
+                    console.error('Error fetching items in category:', err);
+                    res.status(500).json({ error: 'Error fetching items in category' });
+                });
             }
 
-            res.status(200).json({ message: 'Item deleted successfully' });
+            const itemIds = items.map(item => item.id);
+
+            // Delete related offers
+            const deleteOffersSql = 'DELETE FROM offers WHERE item_id IN (?)';
+            connection.query(deleteOffersSql, [itemIds], (err) => {
+                if (err) {
+                    return connection.rollback(() => {
+                        console.error('Error deleting related offers:', err);
+                        res.status(500).json({ error: 'Error deleting related offers' });
+                    });
+                }
+
+                // Delete related requests
+                const deleteRequestsSql = 'DELETE FROM requests WHERE item_id IN (?)';
+                connection.query(deleteRequestsSql, [itemIds], (err) => {
+                    if (err) {
+                        return connection.rollback(() => {
+                            console.error('Error deleting related requests:', err);
+                            res.status(500).json({ error: 'Error deleting related requests' });
+                        });
+                    }
+
+                    // Delete item details
+                    const deleteDetailsSql = 'DELETE FROM item_details WHERE item_id IN (?)';
+                    connection.query(deleteDetailsSql, [itemIds], (err) => {
+                        if (err) {
+                            return connection.rollback(() => {
+                                console.error('Error deleting item details:', err);
+                                res.status(500).json({ error: 'Error deleting item details' });
+                            });
+                        }
+
+                        // Delete from warehouse
+                        const deleteWarehouseSql = 'DELETE FROM warehouse WHERE item_id IN (?)';
+                        connection.query(deleteWarehouseSql, [itemIds], (err) => {
+                            if (err) {
+                                return connection.rollback(() => {
+                                    console.error('Error deleting from warehouse:', err);
+                                    res.status(500).json({ error: 'Error deleting from warehouse' });
+                                });
+                            }
+
+                            // Delete the items
+                            const deleteItemsSql = 'DELETE FROM items WHERE category_id = ?';
+                            connection.query(deleteItemsSql, [categoryId], (err) => {
+                                if (err) {
+                                    return connection.rollback(() => {
+                                        console.error('Error deleting items:', err);
+                                        res.status(500).json({ error: 'Error deleting items' });
+                                    });
+                                }
+
+                                // Finally, delete the category
+                                const deleteCategorySql = 'DELETE FROM categories WHERE id = ?';
+                                connection.query(deleteCategorySql, [categoryId], (err) => {
+                                    if (err) {
+                                        return connection.rollback(() => {
+                                            console.error('Error deleting category:', err);
+                                            res.status(500).json({ error: 'Error deleting category' });
+                                        });
+                                    }
+
+                                    connection.commit((err) => {
+                                        if (err) {
+                                            return connection.rollback(() => {
+                                                console.error('Error committing transaction:', err);
+                                                res.status(500).json({ error: 'Error committing transaction' });
+                                            });
+                                        }
+                                        res.status(200).json({ message: 'Category and all its items deleted successfully' });
+                                    });
+                                });
+                            });
+                        });
+                    });
+                });
+            });
+        });
+    });
+});
+router.post('/:id/move-to-vehicle', (req, res) => {
+    const { id } = req.params;
+    const { quantity, vehicleId } = req.body;
+
+    if (!quantity || !vehicleId) {
+        return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    connection.beginTransaction((err) => {
+        if (err) {
+            return res.status(500).json({ error: 'Error starting transaction' });
+        }
+
+        // First, update the warehouse quantity
+        const updateWarehouseSql = 'UPDATE warehouse SET quantity_base = quantity_base - ? WHERE item_id = ?';
+        connection.query(updateWarehouseSql, [quantity, id], (err, result) => {
+            if (err) {
+                return connection.rollback(() => {
+                    res.status(500).json({ error: 'Error updating warehouse quantity' });
+                });
+            }
+
+            // Then, update the vehicle's inventory
+            const getVehicleSql = 'SELECT inventory FROM vehicles WHERE id = ?';
+            connection.query(getVehicleSql, [vehicleId], (err, results) => {
+                if (err) {
+                    return connection.rollback(() => {
+                        res.status(500).json({ error: 'Error fetching vehicle inventory' });
+                    });
+                }
+
+                let inventory = results[0].inventory ? JSON.parse(results[0].inventory) : {};
+                inventory[id] = (inventory[id] || 0) + parseInt(quantity);
+
+                const updateVehicleSql = 'UPDATE vehicles SET inventory = ? WHERE id = ?';
+                connection.query(updateVehicleSql, [JSON.stringify(inventory), vehicleId], (err, result) => {
+                    if (err) {
+                        return connection.rollback(() => {
+                            res.status(500).json({ error: 'Error updating vehicle inventory' });
+                        });
+                    }
+
+                    connection.commit((err) => {
+                        if (err) {
+                            return connection.rollback(() => {
+                                res.status(500).json({ error: 'Error committing transaction' });
+                            });
+                        }
+                        res.status(200).json({ message: 'Item moved to vehicle successfully' });
+                    });
+                });
+            });
+        });
+    });
+});
+
+// New route to move item from vehicle to warehouse
+router.post('/:id/move-from-vehicle', (req, res) => {
+    const { id } = req.params;
+    const { quantity, vehicleId } = req.body;
+
+    if (!quantity || !vehicleId) {
+        return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    connection.beginTransaction((err) => {
+        if (err) {
+            return res.status(500).json({ error: 'Error starting transaction' });
+        }
+
+        // First, update the vehicle's inventory
+        const getVehicleSql = 'SELECT inventory FROM vehicles WHERE id = ?';
+        connection.query(getVehicleSql, [vehicleId], (err, results) => {
+            if (err) {
+                return connection.rollback(() => {
+                    res.status(500).json({ error: 'Error fetching vehicle inventory' });
+                });
+            }
+
+            let inventory = results[0].inventory ? JSON.parse(results[0].inventory) : {};
+            if (!inventory[id] || inventory[id] < quantity) {
+                return connection.rollback(() => {
+                    res.status(400).json({ error: 'Not enough quantity in vehicle' });
+                });
+            }
+
+            inventory[id] -= parseInt(quantity);
+            if (inventory[id] === 0) {
+                delete inventory[id];
+            }
+
+            const updateVehicleSql = 'UPDATE vehicles SET inventory = ? WHERE id = ?';
+            connection.query(updateVehicleSql, [JSON.stringify(inventory), vehicleId], (err, result) => {
+                if (err) {
+                    return connection.rollback(() => {
+                        res.status(500).json({ error: 'Error updating vehicle inventory' });
+                    });
+                }
+
+                // Then, update the warehouse quantity
+                const updateWarehouseSql = 'UPDATE warehouse SET quantity_base = quantity_base + ? WHERE item_id = ?';
+                connection.query(updateWarehouseSql, [quantity, id], (err, result) => {
+                    if (err) {
+                        return connection.rollback(() => {
+                            res.status(500).json({ error: 'Error updating warehouse quantity' });
+                        });
+                    }
+
+                    connection.commit((err) => {
+                        if (err) {
+                            return connection.rollback(() => {
+                                res.status(500).json({ error: 'Error committing transaction' });
+                            });
+                        }
+                        res.status(200).json({ message: 'Item moved from vehicle successfully' });
+                    });
+                });
+            });
+        });
+    });
+});
+
+// New route to get total quantity (warehouse + all vehicles)
+router.get('/:id/total-quantity', (req, res) => {
+    const { id } = req.params;
+
+    const sql = `
+        SELECT 
+            i.quantity AS total_quantity,
+            w.quantity_base AS warehouse_quantity,
+            COALESCE(SUM(JSON_EXTRACT(v.inventory, CONCAT('$."', i.id, '"'))), 0) AS vehicle_quantity
+        FROM 
+            items i
+        LEFT JOIN 
+            warehouse w ON i.id = w.item_id
+        LEFT JOIN 
+            vehicles v ON JSON_CONTAINS_PATH(v.inventory, 'one', CONCAT('$."', i.id, '"')) = 1
+        WHERE 
+            i.id = ?
+        GROUP BY 
+            i.id, i.quantity, w.quantity_base
+    `;
+
+    connection.query(sql, [id], (err, results) => {
+        if (err) {
+            console.error('Database error: ', err);
+            return res.status(500).json({ error: 'Error fetching total quantity' });
+        }
+
+        if (results.length === 0) {
+            return res.status(404).json({ error: 'Item not found' });
+        }
+
+        const { total_quantity, warehouse_quantity, vehicle_quantity } = results[0];
+        res.status(200).json({
+            total_quantity: parseInt(total_quantity),
+            warehouse_quantity: parseInt(warehouse_quantity),
+            vehicle_quantity: parseInt(vehicle_quantity)
         });
     });
 });

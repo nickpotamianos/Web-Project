@@ -81,6 +81,8 @@ app.use('/api/mapdata', mapdataRoutes);
 app.use('/api/bases', mapdataRoutes); // Ensure that /api/bases route is correctly used
 app.use('/api/task-assignment', taskAssignmentRoutes);
 app.use('/api/warehouse-status', warehouseStatusRoutes);
+app.use('/api/mapdata', mapdataRoutes);
+
 
 
 // Serve static files from the "public" directory

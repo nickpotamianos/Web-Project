@@ -153,6 +153,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     return acc;
                 }, {});
 
+                // Get all category containers
+                const allCategoryContainers = document.querySelectorAll('.item-container');
+
+                // Hide all category containers initially
+                allCategoryContainers.forEach(container => {
+                    container.style.display = 'none';
+                    container.innerHTML = 'Empty';
+                });
+
                 for (const [category, items] of Object.entries(itemsByCategory)) {
                     const itemContainer = document.getElementById(`category-${category}`);
                     if (itemContainer) {
@@ -167,16 +176,15 @@ document.addEventListener('DOMContentLoaded', () => {
                                 : 'No details available';
 
                             itemDiv.innerHTML = `
-                                ${item.name} Quantity: <input type="number" class="item-quantity" data-id="${item.id}" value="${item.quantity}"> - ${details}
-                                <button class="update-quantity" data-id="${item.id}">Update</button>
-                                <button class="delete-item" data-id="${item.id}">Delete</button>
-                            `;
+                            ${item.name} Quantity: <input type="number" class="item-quantity" data-id="${item.id}" value="${item.quantity}"> - ${details}
+                            <button class="update-quantity" data-id="${item.id}">Update</button>
+                            <button class="delete-item" data-id="${item.id}">Delete</button>
+                        `;
                             itemContainer.appendChild(itemDiv);
                         });
 
-                        if (items.length === 0) {
-                            itemContainer.innerHTML = 'Empty';
-                            itemContainer.style.display = 'none';
+                        if (items.length > 0) {
+                            itemContainer.style.display = 'block';
                         }
                     }
                 }
@@ -189,8 +197,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.querySelectorAll('.delete-item').forEach(button => {
                     button.addEventListener('click', deleteItem);
                 });
-
-
             })
             .catch(error => console.error('Error fetching items:', error));
     }
@@ -224,16 +230,31 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(response => response.json())
             .then(data => {
                 console.log('Item deleted successfully:', data);
-                const itemElement = document.querySelector(`button.delete-item[data-id="${itemId}"]`).parentElement;
-                itemElement.remove(); // Remove the item from the DOM
 
-                const categoryContainer = itemElement.parentElement;
-                if (categoryContainer.children.length === 0) {
-                    categoryContainer.innerHTML = 'Empty';
-                    categoryContainer.style.display = 'none';
+                // Find the item element
+                const itemElement = document.querySelector(`button.delete-item[data-id="${itemId}"]`).closest('.item');
+
+                if (itemElement) {
+                    const categoryContainer = itemElement.closest('.item-container');
+                    itemElement.remove(); // Remove the item from the DOM
+
+                    if (categoryContainer) {
+                        // Check if the category is now empty
+                        if (categoryContainer.children.length === 0) {
+                            categoryContainer.innerHTML = 'Empty';
+                            categoryContainer.style.display = 'none';
+                        }
+                    }
                 }
+
+                // Optionally, you can refresh the entire item list to ensure consistency
+                loadItems();
             })
-            .catch(error => console.error('Error deleting item:', error));
+            .catch(error => {
+                console.error('Error deleting item:', error);
+                // Optionally, show an error message to the user
+                alert('Failed to delete item. Please try again.');
+            });
     }
 
     function deleteCategory(event) {

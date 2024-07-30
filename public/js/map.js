@@ -66,17 +66,39 @@ document.addEventListener("DOMContentLoaded", function() {
                 }
             }
         }
+
         return content;
+
     }
+
 
     let taskLines = L.layerGroup().addTo(map);
 
-    function drawTaskLine(vehicle) {
-        if (vehicle.assigned_task_id && vehicle.task_latitude && vehicle.task_longitude) {
-            const line = L.polyline([
-                [vehicle.latitude, vehicle.longitude],
-                [vehicle.task_latitude, vehicle.task_longitude]
-            ], { color: vehicle.assigned_task_type === 'request' ? 'red' : 'blue', weight: 5, opacity: 0.5 }).addTo(taskLines);
+    function drawTaskLines(vehicle) {
+        if (vehicle.request_tasks) {
+            const requests = vehicle.request_tasks.split(';').map(task => {
+                const [id, lat, lng] = task.split(',');
+                return { id, latitude: parseFloat(lat), longitude: parseFloat(lng) };
+            });
+            requests.forEach(request => {
+                L.polyline([
+                    [vehicle.latitude, vehicle.longitude],
+                    [request.latitude, request.longitude]
+                ], { color: 'red', weight: 2, opacity: 0.5 }).addTo(taskLines);
+            });
+        }
+
+        if (vehicle.offer_tasks) {
+            const offers = vehicle.offer_tasks.split(';').map(task => {
+                const [id, lat, lng] = task.split(',');
+                return { id, latitude: parseFloat(lat), longitude: parseFloat(lng) };
+            });
+            offers.forEach(offer => {
+                L.polyline([
+                    [vehicle.latitude, vehicle.longitude],
+                    [offer.latitude, offer.longitude]
+                ], { color: 'blue', weight: 2, opacity: 0.5 }).addTo(taskLines);
+            });
         }
     }
 
@@ -101,13 +123,12 @@ document.addEventListener("DOMContentLoaded", function() {
         });
 
         // Add vehicles
+        // Add vehicles
         data.vehicles.forEach(vehicle => {
             vehicle.type = 'vehicle';
-            const layer = vehicle.assigned_task_id ? 'vehiclesWithTasks' : 'vehiclesWithoutTasks';
+            const layer = (vehicle.request_tasks || vehicle.offer_tasks) ? 'vehiclesWithTasks' : 'vehiclesWithoutTasks';
             const marker = addMarker(vehicle, layer, icons.vehicle);
-            if (vehicle.assigned_task_id) {
-                drawTaskLine(vehicle);
-            }
+            drawTaskLines(vehicle);
         });
 
         // Add requests
@@ -261,4 +282,26 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
 });
+function assignTaskToVehicle(vehicleId, taskId, taskType) {
+    fetch('/api/mapdata/assign-task', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ vehicleId, taskId, taskType }),
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                alert(data.error);
+            } else {
+                alert('Task assigned successfully');
+                fetchMapData(); // Refresh the map data
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while assigning the task');
+        });
+}
 

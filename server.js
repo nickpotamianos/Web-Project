@@ -7,12 +7,15 @@ const MySQLStore = require('express-mysql-session')(session);
 const path = require('path');
 const fetch = require('node-fetch');
 const fileUpload = require('express-fileupload');
-const fs = require('fs');
 
 const userRoutes = require('./routes/users');
 const itemRoutes = require('./routes/items');
 const categoryRoutes = require('./routes/categories');
 const warehouseRoutes = require('./routes/warehouse');
+const mapdataRoutes = require('./routes/mapdata');
+const taskAssignmentRoutes = require('./routes/taskAssignment');
+const warehouseStatusRoutes = require('./routes/warehouse_status');
+
 
 const app = express();
 
@@ -20,6 +23,7 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true })); // Support encoded bodies
 app.use(fileUpload());
+
 
 // Database connection
 const connection = mysql.createConnection({
@@ -73,9 +77,15 @@ app.use('/api/items', itemRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/warehouse', warehouseRoutes);
+app.use('/api/mapdata', mapdataRoutes);
+app.use('/api/bases', mapdataRoutes); // Ensure that /api/bases route is correctly used
+app.use('/api/task-assignment', taskAssignmentRoutes);
+app.use('/api/warehouse-status', warehouseStatusRoutes);
+
 
 // Serve static files from the "public" directory
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.json());
 
 // Serve public HTML files without restrictions
 app.get('/', (req, res) => {
@@ -89,7 +99,9 @@ app.get('/index', (req, res) => {
 app.get('/index.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'index.html'));
 });
-
+app.get('/warehouse_status.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'views', 'warehouse_status.html'));
+});
 app.get('/signup', (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'signup.html'));
 });
@@ -113,6 +125,11 @@ app.get('/admin_dashboard', isAuthenticated, isAdmin, (req, res) => {
 
 app.get('/admin_dashboard.html', isAuthenticated, isAdmin, (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'admin_dashboard.html'));
+});
+
+// Serve protected HTML file for map view
+app.get('/admin_dashboard/map.html', isAuthenticated, isAdmin, (req, res) => {
+    res.sendFile(path.join(__dirname, 'views', 'map.html'));
 });
 
 // Handle user login
@@ -275,7 +292,6 @@ async function populateDatabase(data) {
 
     await Promise.all(itemPromises);
 }
-
 
 // Route for handling POST requests to '/signup'
 app.post('/signup', (req, res) => {

@@ -195,8 +195,6 @@ document.addEventListener('DOMContentLoaded', () => {
             .catch(error => console.error('Error fetching items:', error));
     }
 
-
-
     function updateItemQuantity(event) {
         const itemId = event.target.getAttribute('data-id');
         const itemQuantityInput = document.querySelector(`.item-quantity[data-id="${itemId}"]`);
@@ -263,55 +261,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     loadCategories();
-
-    const map = L.map('mapid').setView([51.505, -0.09], 13);
-
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
-
-    const exampleData = {
-        bases: [
-            { name: 'Base 1', lat: 51.505, lng: -0.09 },
-            { name: 'Base 2', lat: 51.515, lng: -0.1 }
-        ],
-        vehicles: [
-            { name: 'Vehicle 1', lat: 51.505, lng: -0.08 },
-            { name: 'Vehicle 2', lat: 51.515, lng: -0.11 }
-        ],
-        requests: [
-            { type: 'Food', quantity: 10, lat: 51.505, lng: -0.07 },
-            { type: 'Water', quantity: 20, lat: 51.515, lng: -0.12 }
-        ],
-        offers: [
-            { type: 'Blankets', quantity: 30, lat: 51.505, lng: -0.06 },
-            { type: 'Medical Supplies', quantity: 40, lat: 51.515, lng: -0.13 }
-        ]
-    };
-
-    function addMarkers(data) {
-        data.bases.forEach(base => {
-            L.marker([base.lat, base.lng]).addTo(map)
-                .bindPopup(`Base: ${base.name}`);
-        });
-
-        data.vehicles.forEach(vehicle => {
-            L.marker([vehicle.lat, vehicle.lng]).addTo(map)
-                .bindPopup(`Vehicle: ${vehicle.name}`);
-        });
-
-        data.requests.forEach(request => {
-            L.marker([request.lat, request.lng]).addTo(map)
-                .bindPopup(`Request: ${request.type} - ${request.quantity}`);
-        });
-
-        data.offers.forEach(offer => {
-            L.marker([offer.lat, offer.lng]).addTo(map)
-                .bindPopup(`Offer: ${offer.type} - ${offer.quantity}`);
-        });
-    }
-
-    addMarkers(exampleData);
 
     document.getElementById('uploadForm').addEventListener('submit', function(event) {
         event.preventDefault();

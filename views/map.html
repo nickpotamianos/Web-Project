@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Map View</title>
+    <link rel="icon" type="image/png" href="/images/logo.png">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="/css/map.css">
+</head>
+<body>
+<header>
+    <h1>Admin Dashboard - Map View</h1>
+    <nav>
+        <ul class="nav-container">
+            <li><a href="/admin_dashboard.html">Items</a></li>
+            <li><a href="/admin_dashboard/map.html">Map View</a></li>
+            <li><a href="#requests">Requests</a></li>
+            <li><a href="#offers">Offers</a></li>
+            <li><a href="#tasks">Tasks</a></li>
+            <li><a href="#announcements">Announcements</a></li>
+        </ul>
+        <button id="logoutButton" class="logout-button">Logout</button>
+    </nav>
+</header>
+
+<main>
+    <div id="mapid" style="padding: 30px"></div>
+</main>
+
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<script src="/js/map.js"></script>
+</body>
+</html>

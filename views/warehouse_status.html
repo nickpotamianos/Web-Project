@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warehouse Status - Admin Dashboard</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/warehouse_status.css">
+    <link rel="icon" type="image/png" href="/images/logo.png">
+
+</head>
+<body>
+<header>
+    <h1>Admin Dashboard - Warehouse Status</h1>
+    <nav>
+        <ul>
+            <li><a href="/admin_dashboard.html">Items</a></li>
+            <li><a href="/admin_dashboard/map.html">Map View</a></li>
+            <li><a href="/admin_dashboard/warehouse_status.html">Warehouse Status</a></li>
+            <li><a href="#requests">Requests</a></li>
+            <li><a href="#offers">Offers</a></li>
+            <li><a href="#tasks">Tasks</a></li>
+            <li><a href="#announcements">Announcements</a></li>
+        </ul>
+        <button id="logout" class="logout-button">Logout</button>
+    </nav>
+</header>
+<main>
+    <h2>Warehouse Status</h2>
+    <div id="category-filter">
+        <!-- Category checkboxes will be dynamically added here -->
+    </div>
+    <table id="warehouse-table">
+        <thead>
+        <tr>
+            <th>Item Name</th>
+            <th>Category</th>
+            <th>Quantity in Base</th>
+            <th>Quantity in Vehicles</th>
+            <th>Total Quantity</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- Table rows will be dynamically added here -->
+        </tbody>
+    </table>
+</main>
+<script src="/js/warehouse_status.js"></script>
+</body>
+</html>

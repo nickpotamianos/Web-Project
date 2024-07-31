@@ -130,10 +130,6 @@ button:hover {
     margin-bottom: 5px;
 }
 
-#mapid {
-    height: 500px;
-    margin-top: 20px;
-}
 
 .category {
     display: flex;

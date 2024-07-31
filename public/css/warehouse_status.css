@@ -52,18 +52,6 @@ nav ul li a:hover {
     color: white;
 }
 
-.logout-button {
-    background-color: #c53131; /* Red background */
-    color: white; /* White text */
-    border: none;
-    padding: 10px 20px;
-    text-align: center;
-    text-decoration: none;
-    font-size: 16px;
-    cursor: pointer;
-    flex-shrink: 0;
-    width: auto; /* Auto width */
-}
 
 .logout-button:hover {
     background-color: #831e1e; /* Darker red on hover */

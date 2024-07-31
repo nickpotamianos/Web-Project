@@ -5,23 +5,27 @@ const connection = require('../db');
 router.get('/', (req, res) => {
     const sqlBases = 'SELECT id, name, latitude, longitude FROM bases';
     const sqlVehicles = `
-        SELECT v.id, v.name as username, v.load_capacity as \`load\`, v.status, v.latitude, v.longitude,
-               v.assigned_task_id, v.assigned_task_type,
-               GROUP_CONCAT(DISTINCT CONCAT(r.id, ',', r.latitude, ',', r.longitude) SEPARATOR ';') as request_tasks,
-               GROUP_CONCAT(DISTINCT CONCAT(o.id, ',', o.latitude, ',', o.longitude) SEPARATOR ';') as offer_tasks
+        SELECT v.id, v.name as username, v.status, v.latitude, v.longitude,
+               v.inventory,
+               GROUP_CONCAT(DISTINCT CONCAT(r.id, ',', r.latitude, ',', r.longitude, ',', i_r.name, ',', r.quantity) SEPARATOR ';') as request_tasks,
+               GROUP_CONCAT(DISTINCT CONCAT(o.id, ',', o.latitude, ',', o.longitude, ',', i_o.name, ',', o.quantity) SEPARATOR ';') as offer_tasks
         FROM vehicles v
                  LEFT JOIN requests r ON FIND_IN_SET(r.id, v.assigned_task_id) > 0 AND v.assigned_task_type LIKE '%request%'
                  LEFT JOIN offers o ON FIND_IN_SET(o.id, v.assigned_task_id) > 0 AND v.assigned_task_type LIKE '%offer%'
+                 LEFT JOIN items i_r ON r.item_id = i_r.id
+                 LEFT JOIN items i_o ON o.item_id = i_o.id
         GROUP BY v.id
     `;
     const sqlRequests = 'SELECT r.id, u.first_name as name, u.phone, r.date_registered as date, i.name as item, r.quantity, r.status, r.latitude, r.longitude, v.name as vehicle, r.collection_date FROM requests r LEFT JOIN users u ON r.user_id = u.id LEFT JOIN items i ON r.item_id = i.id LEFT JOIN vehicles v ON r.vehicle_id = v.id';
     const sqlOffers = 'SELECT o.id, u.first_name as name, u.phone, o.date_registered as date, i.name as item, o.quantity, o.status, o.latitude, o.longitude, v.name as vehicle, o.withdrawal_date FROM offers o LEFT JOIN users u ON o.user_id = u.id LEFT JOIN items i ON o.item_id = i.id LEFT JOIN vehicles v ON o.vehicle_id = v.id';
+    const sqlItems = 'SELECT id, name FROM items';
 
     let mapData = {
         bases: [],
         vehicles: [],
         requests: [],
-        offers: []
+        offers: [],
+        items: {}
     };
 
     connection.query(sqlBases, (err, results) => {
@@ -31,27 +35,40 @@ router.get('/', (req, res) => {
         }
         mapData.bases = results;
 
-        connection.query(sqlVehicles, (err, results) => {
+        connection.query(sqlItems, (err, results) => {
             if (err) {
-                console.error('Database error fetching vehicles: ', err);
-                return res.status(500).json({ error: 'Error fetching vehicles' });
+                console.error('Database error fetching items: ', err);
+                return res.status(500).json({ error: 'Error fetching items' });
             }
-            mapData.vehicles = results;
+            results.forEach(item => {
+                mapData.items[item.id] = item.name;
+            });
 
-            connection.query(sqlRequests, (err, results) => {
+            connection.query(sqlVehicles, (err, results) => {
                 if (err) {
-                    console.error('Database error fetching requests: ', err);
-                    return res.status(500).json({ error: 'Error fetching requests' });
+                    console.error('Database error fetching vehicles: ', err);
+                    return res.status(500).json({ error: 'Error fetching vehicles', details: err.message });
                 }
-                mapData.requests = results;
+                mapData.vehicles = results.map(vehicle => ({
+                    ...vehicle,
+                    inventory: vehicle.inventory ? JSON.parse(vehicle.inventory) : {}
+                }));
 
-                connection.query(sqlOffers, (err, results) => {
+                connection.query(sqlRequests, (err, results) => {
                     if (err) {
-                        console.error('Database error fetching offers: ', err);
-                        return res.status(500).json({ error: 'Error fetching offers' });
+                        console.error('Database error fetching requests: ', err);
+                        return res.status(500).json({ error: 'Error fetching requests' });
                     }
-                    mapData.offers = results;
-                    res.status(200).json(mapData);
+                    mapData.requests = results;
+
+                    connection.query(sqlOffers, (err, results) => {
+                        if (err) {
+                            console.error('Database error fetching offers: ', err);
+                            return res.status(500).json({ error: 'Error fetching offers' });
+                        }
+                        mapData.offers = results;
+                        res.status(200).json(mapData);
+                    });
                 });
             });
         });

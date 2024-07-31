@@ -36,19 +36,46 @@ document.addEventListener("DOMContentLoaded", function() {
         return marker;
     }
 
-    function createPopupContent(item) {
+    function createPopupContent(item, itemNames) {
+        console.log('Creating popup content for item:', item);
         let content = `<b>${item.type}</b><br>`;
         if (item.type === 'base') {
             content += `Base: ${item.name}`;
         } else if (item.type === 'vehicle') {
             content += `Username: ${item.username}<br>
-                        Load: ${item.load}<br>
-                        Status: ${item.status}`;
-            if (item.activeTasks && item.activeTasks.length > 0) {
-                content += `<br>Active Tasks:<br>`;
-                item.activeTasks.forEach(task => {
-                    content += `- ${task.type}: ${task.item} (${task.quantity})<br>`;
+                    Status: ${item.status}<br>`;
+
+            // Display inventory
+            content += 'Inventory:<br>';
+            console.log('Vehicle inventory:', item.inventory);
+            if (item.inventory && typeof item.inventory === 'object') {
+                for (const [itemId, quantity] of Object.entries(item.inventory)) {
+                    const itemName = itemNames[itemId] || `Unknown Item (ID: ${itemId})`;
+                    content += `- ${itemName} / quantity: ${quantity}<br>`;
+                }
+            } else {
+                console.log('Inventory is empty or invalid');
+                content += '- Empty<br>';
+            }
+
+            // Display active tasks
+            content += `Active Tasks:<br>`;
+            if (item.request_tasks) {
+                const requests = item.request_tasks.split(';');
+                requests.forEach(request => {
+                    const [id, lat, lng, itemName, quantity] = request.split(',');
+                    content += `- Request ${id}: ${itemName} (${quantity})<br>`;
                 });
+            }
+            if (item.offer_tasks) {
+                const offers = item.offer_tasks.split(';');
+                offers.forEach(offer => {
+                    const [id, lat, lng, itemName, quantity] = offer.split(',');
+                    content += `- Offer ${id}: ${itemName} (${quantity})<br>`;
+                });
+            }
+            if (!item.request_tasks && !item.offer_tasks) {
+                content += `- No active tasks<br>`;
             }
         } else if (item.type === 'request' || item.type === 'offer') {
             content += `Name: ${item.name}<br>
@@ -66,7 +93,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 }
             }
         }
-
+        console.log('Final popup content:', content);
         return content;
 
     }
@@ -127,7 +154,8 @@ document.addEventListener("DOMContentLoaded", function() {
         data.vehicles.forEach(vehicle => {
             vehicle.type = 'vehicle';
             const layer = (vehicle.request_tasks || vehicle.offer_tasks) ? 'vehiclesWithTasks' : 'vehiclesWithoutTasks';
-            const marker = addMarker(vehicle, layer, icons.vehicle);
+            const marker = L.marker([vehicle.latitude, vehicle.longitude], { icon: icons.vehicle }).addTo(layers[layer]);
+            marker.bindPopup(() => createPopupContent(vehicle, data.items));
             drawTaskLines(vehicle);
         });
 

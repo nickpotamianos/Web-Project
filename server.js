@@ -101,7 +101,7 @@ app.get('/index', (req, res) => {
 app.get('/index.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'index.html'));
 });
-app.get('/warehouse_status.html', (req, res) => {
+app.get('/admin_dashboard/warehouse_status.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'warehouse_status.html'));
 });
 app.get('/signup', (req, res) => {

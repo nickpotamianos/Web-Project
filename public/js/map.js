@@ -78,20 +78,29 @@ document.addEventListener("DOMContentLoaded", function() {
                 content += `- No active tasks<br>`;
             }
         } else if (item.type === 'request' || item.type === 'offer') {
+            const dateRegistered = new Date(item.date).toLocaleString();
+            const collectionDate = item.type === 'request' ? item.collection_date : item.withdrawal_date;
+            const formattedCollectionDate = collectionDate ? new Date(collectionDate).toLocaleString() : "Not yet collected";
+
             content += `Name: ${item.name}<br>
-                        Phone: ${item.phone}<br>
-                        Date: ${item.date}<br>
-                        Item: ${item.item}<br>
-                        Quantity: ${item.quantity}<br>
-                        Status: ${item.status}`;
+                Phone: ${item.phone}<br>
+                Date Registered: ${dateRegistered}<br>
+                Item: ${item.item}<br>
+                Quantity: ${item.quantity}<br>
+                Status: ${item.status}<br>`;
+
             if (item.vehicle) {
-                content += `<br>Assigned to: ${item.vehicle}`;
-                if (item.type === 'request' && item.collection_date) {
-                    content += `<br>Collection Date: ${item.collection_date}`;
-                } else if (item.type === 'offer' && item.withdrawal_date) {
-                    content += `<br>Withdrawal Date: ${item.withdrawal_date}`;
-                }
+                content += `Assigned to: Vehicle ${item.vehicle}<br>`;
             }
+            content += `${item.type === 'request' ? 'Collection' : 'Withdrawal'} Date: ${formattedCollectionDate}<br>`;
+
+            // Add task ID
+            content += `Task ID: ${item.id}<br>`;
+
+            /* Add button for assigning vehicle if the task is not completed
+            if (item.status !== 'completed') {
+                content += `<button onclick="assignVehicle('${item.type}', ${item.id})">Assign Vehicle</button>`;
+            }*/
         }
         console.log('Final popup content:', content);
         return content;
@@ -150,7 +159,6 @@ document.addEventListener("DOMContentLoaded", function() {
         });
 
         // Add vehicles
-        // Add vehicles
         data.vehicles.forEach(vehicle => {
             vehicle.type = 'vehicle';
             const layer = (vehicle.request_tasks || vehicle.offer_tasks) ? 'vehiclesWithTasks' : 'vehiclesWithoutTasks';
@@ -162,16 +170,16 @@ document.addEventListener("DOMContentLoaded", function() {
         // Add requests
         data.requests.forEach(request => {
             request.type = 'request';
-            const layer = request.status === 'pending' ? 'requestsPending' : 'requestsUndertaken';
-            const icon = request.status === 'pending' ? icons.requestPending : icons.requestInProgress;
+            const layer = request.status === 'processed' ? 'requestsUndertaken' : 'requestsPending';
+            const icon = request.status === 'processed' ? icons.requestInProgress : icons.requestPending;
             addMarker(request, layer, icon);
         });
 
-        // Add offers
+// Add offers
         data.offers.forEach(offer => {
             offer.type = 'offer';
-            const layer = offer.status === 'pending' ? 'offersPending' : 'offersUndertaken';
-            const icon = offer.status === 'pending' ? icons.offerPending : icons.offerInProgress;
+            const layer = offer.status === 'processed' ? 'offersUndertaken' : 'offersPending';
+            const icon = offer.status === 'processed' ? icons.offerInProgress : icons.offerPending;
             addMarker(offer, layer, icon);
         });
     }
@@ -267,29 +275,7 @@ document.addEventListener("DOMContentLoaded", function() {
     };
 
     L.control.layers(null, overlays, { position: 'topright' }).addTo(map);
-    window.assignTask = function(vehicleId) {
-        const taskId = prompt("Enter task ID:");
-        const taskType = prompt("Enter task type (request/offer):");
-        if (taskId && taskType) {
-            fetch('/api/task-assignment/assign', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ vehicleId, taskId, taskType })
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert("Task assigned successfully!");
-                        fetchMapData(); // Refresh the map
-                    } else {
-                        alert("Failed to assign task.");
-                    }
-                })
-                .catch(error => console.error('Error:', error));
-        }
-    }
-
-    window.assignVehicle = function(taskType, taskId) {
+    /*window.assignVehicle = function(taskType, taskId) {
         const vehicleId = prompt("Enter vehicle ID:");
         if (vehicleId) {
             fetch('/api/task-assignment/assign', {
@@ -303,33 +289,14 @@ document.addEventListener("DOMContentLoaded", function() {
                         alert("Vehicle assigned successfully!");
                         fetchMapData(); // Refresh the map
                     } else {
-                        alert("Failed to assign vehicle.");
+                        alert(data.error || "Failed to assign vehicle.");
                     }
                 })
-                .catch(error => console.error('Error:', error));
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while assigning the vehicle.');
+                });
         }
-    }
+    }*/
 });
-function assignTaskToVehicle(vehicleId, taskId, taskType) {
-    fetch('/api/mapdata/assign-task', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ vehicleId, taskId, taskType }),
-    })
-        .then(response => response.json())
-        .then(data => {
-            if (data.error) {
-                alert(data.error);
-            } else {
-                alert('Task assigned successfully');
-                fetchMapData(); // Refresh the map data
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('An error occurred while assigning the task');
-        });
-}
 

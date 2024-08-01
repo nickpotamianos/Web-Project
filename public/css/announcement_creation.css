@@ -1,0 +1,59 @@
+.form-container {
+    max-width: 10000px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+.form-group {
+    margin-bottom: 20px;
+}
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    width: 100%;
+}
+.form-group input[type="text"],
+.form-group textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+}
+.form-group textarea {
+    height: 100px;
+    resize: vertical;
+}
+.checkbox-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.checkbox-item {
+    display: flex;
+    align-items: center;
+    margin-right: 20px;
+}
+.checkbox-item input[type="checkbox"] {
+    margin-right: 5px;
+}
+button[type="submit"] {
+    background-color: #2575fc;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+button[type="submit"]:hover {
+    background-color: #1f5fd1;
+}
+#announcementMessage {
+    margin-top: 20px;
+    padding: 10px;
+    border-radius: 4px;
+}

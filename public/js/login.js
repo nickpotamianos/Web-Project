@@ -20,8 +20,21 @@ $(document).ready(function() {
             contentType: "application/json",
             success: function(response) {
                 console.log("Login successful: ", response); // Debug log
-                // Redirect to the dashboard or another page on success
-                window.location.href = 'admin_dashboard.html';
+                // Redirect based on user role
+                switch(response.role) {
+                    case 'admin':
+                        window.location.href = 'admin_dashboard.html';
+                        break;
+                    case 'rescuer':
+                        window.location.href = 'rescuer_dashboard.html';
+                        break;
+                    case 'citizen':
+                        window.location.href = 'citizen_dashboard.html';
+                        break;
+                    default:
+                        console.error('Unknown user role:', response.role);
+                        alert('Login successful but unknown user role');
+                }
             },
             error: function(xhr, status, error) {
                 console.error('Login failed: ' + error);

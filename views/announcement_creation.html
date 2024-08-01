@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Announcement</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/announcement_creation.css">
+    <link rel="icon" type="image/png" href="/images/logo.png">
+    <link rel="stylesheet" href="/css/admin_dashboard.css">
+</head>
+<body>
+<header>
+    <h1>Admin Dashboard</h1>
+    <nav>
+        <div class="nav-container">
+            <ul>
+                <li><a href="/admin_dashboard.html">Items</a></li>
+                <li><a href="/admin_dashboard/map.html">Map View</a></li>
+                <li><a href="/admin_dashboard/warehouse_status.html">Warehouse Status</a></li>
+                <li><a href="/admin_dashboard/rescuer_management.html">Rescuer Management</a></li>
+                <li><a href="/admin_dashboard/announcement_creation.html">Announcements</a></li>
+                <li><a href="/admin_dashboard/stats.html">Stats</a></li>
+            </ul>
+        </div>
+        <button id="logoutButton" class="logout-button">Logout</button>
+    </nav>
+</header>
+
+<main>
+    <div class="form-container">
+        <h1>Create Announcement</h1>
+        <form id="announcementForm">
+            <div class="form-group">
+                <label for="announcementTitle">Announcement Title</label>
+                <input type="text" id="announcementTitle" required>
+            </div>
+            <div class="form-group">
+                <label for="announcementDescription">Announcement Description</label>
+                <textarea id="announcementDescription" required></textarea>
+            </div>
+            <div class="form-group">
+                <label>Select Items</label>
+                <div id="itemSelection" class="checkbox-group">
+                    <!-- Item checkboxes will be dynamically added here -->
+                </div>
+            </div>
+            <button type="submit">Create Announcement</button>
+        </form>
+        <div id="announcementMessage"></div>
+    </div>
+</main>
+
+<script src="/js/announcement_creation.js"></script>
+</body>
+</html>

@@ -15,6 +15,8 @@ const warehouseRoutes = require('./routes/warehouse');
 const mapdataRoutes = require('./routes/mapdata');
 const taskAssignmentRoutes = require('./routes/taskAssignment');
 const warehouseStatusRoutes = require('./routes/warehouse_status');
+const announcementRoutes = require('./routes/announcements');
+const statsRoutes = require('./routes/stats');
 
 
 const app = express();
@@ -82,8 +84,8 @@ app.use('/api/bases', mapdataRoutes); // Ensure that /api/bases route is correct
 app.use('/api/task-assignment', taskAssignmentRoutes);
 app.use('/api/warehouse-status', warehouseStatusRoutes);
 app.use('/api/mapdata', mapdataRoutes);
-
-
+app.use('/api/announcements', announcementRoutes);
+app.use('/api/stats', statsRoutes);
 
 // Serve static files from the "public" directory
 app.use(express.static(path.join(__dirname, 'public')));
@@ -133,7 +135,16 @@ app.get('/admin_dashboard.html', isAuthenticated, isAdmin, (req, res) => {
 app.get('/admin_dashboard/map.html', isAuthenticated, isAdmin, (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'map.html'));
 });
+app.get('/admin_dashboard/rescuer_management.html', isAuthenticated, isAdmin, (req, res) => {
+    res.sendFile(path.join(__dirname, 'views', 'rescuer_management.html'));
+});
 
+app.get('/admin_dashboard/announcement_creation.html', isAuthenticated, isAdmin, (req, res) => {
+    res.sendFile(path.join(__dirname, 'views', 'announcement_creation.html'));
+});
+app.get('/admin_dashboard/stats.html', isAuthenticated, isAdmin, (req, res) => {
+    res.sendFile(path.join(__dirname, 'views', 'stats.html'));
+});
 // Handle user login
 app.post('/login', (req, res) => {
     const { email, pass } = req.body;
@@ -151,8 +162,12 @@ app.post('/login', (req, res) => {
             return res.status(500).json({ error: 'Error logging in' });
         }
         if (results.length > 0) {
-            req.session.user = results[0];
-            return res.status(200).json({ message: 'Login successful' });
+            const user = results[0];
+            req.session.user = user;
+            return res.status(200).json({
+                message: 'Login successful',
+                role: user.role // Include the user's role in the response
+            });
         } else {
             return res.status(401).json({ error: 'Invalid email or password' });
         }
@@ -319,6 +334,25 @@ app.post('/signup', (req, res) => {
         }
         console.log('User registered successfully');
         res.status(200).json({ message: 'User registered successfully' }); // Send JSON response
+    });
+});
+app.post('/api/create-rescuer', isAuthenticated, isAdmin, (req, res) => {
+    const { email, password, firstName, lastName, phone } = req.body;
+    const role = 'rescuer';
+
+    // Basic validation
+    if (!email || !password || !firstName || !lastName || !phone) {
+        return res.status(400).json({ error: 'All fields are required' });
+    }
+
+    const sql = 'INSERT INTO users (email, password, first_name, last_name, phone, role) VALUES (?, ?, ?, ?, ?, ?)';
+
+    connection.query(sql, [email, password, firstName, lastName, phone, role], (err, results) => {
+        if (err) {
+            console.error('Database error: ', err);
+            return res.status(500).json({ error: 'Error creating rescuer account' });
+        }
+        res.status(201).json({ message: 'Rescuer account created successfully', userId: results.insertId });
     });
 });
 

@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Warehouse Status - Admin Dashboard</title>
-    <link rel="stylesheet" href="/css/styles.css">
-    <link rel="stylesheet" href="/css/warehouse_status.css">
-    <link rel="stylesheet" href="/css/admin_dashboard.css">
+    <title>Service Statistics</title>
     <link rel="icon" type="image/png" href="/images/logo.png">
-
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/admin_dashboard.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 <header>
@@ -27,26 +26,19 @@
         <button id="logoutButton" class="logout-button">Logout</button>
     </nav>
 </header>
+
 <main>
-    <h2>Warehouse Status</h2>
-    <div id="category-filter">
-        <!-- Category checkboxes will be dynamically added here -->
+    <h1>Service Statistics</h1>
+    <div>
+        <label for="startDate">Start Date:</label>
+        <input type="date" id="startDate">
+        <label for="endDate">End Date:</label>
+        <input type="date" id="endDate">
+        <button id="updateChart">Update Chart</button>
     </div>
-    <table id="warehouse-table">
-        <thead>
-        <tr>
-            <th>Item Name</th>
-            <th>Category</th>
-            <th>Quantity in Base</th>
-            <th>Quantity in Vehicles</th>
-            <th>Total Quantity</th>
-        </tr>
-        </thead>
-        <tbody>
-        <!-- Table rows will be dynamically added here -->
-        </tbody>
-    </table>
+    <canvas id="statsChart"></canvas>
 </main>
-<script src="/js/warehouse_status.js"></script>
+
+<script src="/js/stats.js"></script>
 </body>
 </html>

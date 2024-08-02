@@ -13,7 +13,9 @@ document.addEventListener("DOMContentLoaded", function() {
         requestPending: L.icon({ iconUrl: '/images/request_pending_icon.png', iconSize: [32, 32] }),
         requestInProgress: L.icon({ iconUrl: '/images/request_in_progress_icon.png', iconSize: [32, 32] }),
         offerPending: L.icon({ iconUrl: '/images/offer_pending_icon.png', iconSize: [32, 32] }),
-        offerInProgress: L.icon({ iconUrl: '/images/offer_in_progress_icon.png', iconSize: [32, 32] })
+        offerInProgress: L.icon({ iconUrl: '/images/offer_in_progress_icon.png', iconSize: [32, 32] }),
+        requestUnassigned: L.icon({ iconUrl: '/images/request_unassigned_icon.png', iconSize: [32, 32] }),
+        offerUnassigned: L.icon({ iconUrl: '/images/offer_unassigned_icon.png', iconSize: [32, 32] }),
     };
 
     // Create layer groups for filtering
@@ -25,6 +27,8 @@ document.addEventListener("DOMContentLoaded", function() {
         requestsUndertaken: L.layerGroup(),
         offersPending: L.layerGroup(),
         offersUndertaken: L.layerGroup(),
+        requestsUnassigned: L.layerGroup(),
+        offersUnassigned: L.layerGroup(),
     };
 
     // Add all layers to the map
@@ -170,16 +174,34 @@ document.addEventListener("DOMContentLoaded", function() {
         // Add requests
         data.requests.forEach(request => {
             request.type = 'request';
-            const layer = request.status === 'processed' ? 'requestsUndertaken' : 'requestsPending';
-            const icon = request.status === 'processed' ? icons.requestInProgress : icons.requestPending;
+            let layer, icon;
+            if (request.status === 'unassigned') {
+                layer = 'requestsUnassigned';
+                icon = icons.requestUnassigned;
+            } else if (request.status === 'processed') {
+                layer = 'requestsUndertaken';
+                icon = icons.requestInProgress;
+            } else {
+                layer = 'requestsPending';
+                icon = icons.requestPending;
+            }
             addMarker(request, layer, icon);
         });
 
 // Add offers
         data.offers.forEach(offer => {
             offer.type = 'offer';
-            const layer = offer.status === 'processed' ? 'offersUndertaken' : 'offersPending';
-            const icon = offer.status === 'processed' ? icons.offerInProgress : icons.offerPending;
+            let layer, icon;
+            if (offer.status === 'unassigned') {
+                layer = 'offersUnassigned';
+                icon = icons.offerUnassigned;
+            } else if (offer.status === 'processed') {
+                layer = 'offersUndertaken';
+                icon = icons.offerInProgress;
+            } else {
+                layer = 'offersPending';
+                icon = icons.offerPending;
+            }
             addMarker(offer, layer, icon);
         });
     }
@@ -271,6 +293,8 @@ document.addEventListener("DOMContentLoaded", function() {
         "Undertaken Requests": layers.requestsUndertaken,
         "Pending Offers": layers.offersPending,
         "Undertaken Offers": layers.offersUndertaken,
+        "Unassigned Requests": layers.requestsUnassigned,
+        "Unassigned Offers": layers.offersUnassigned,
         "Task Lines": taskLines
     };
 

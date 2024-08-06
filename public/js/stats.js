@@ -13,24 +13,24 @@ document.addEventListener('DOMContentLoaded', function() {
                 labels: data.labels,
                 datasets: [
                     {
-                        label: 'New Requests',
-                        data: data.newRequests,
+                        label: 'Unassigned (NEW) Requests',
+                        data: data.unassignedRequests,
                         backgroundColor: 'rgba(255, 99, 132, 0.5)'
                     },
                     {
-                        label: 'New Offers',
-                        data: data.newOffers,
-                        backgroundColor: 'rgba(54, 162, 235, 0.5)'
+                        label: 'Completed Requests',
+                        data: data.completedRequests,
+                        backgroundColor: 'rgba(255, 205, 86, 0.5)'
                     },
                     {
-                        label: 'Processed Requests',
-                        data: data.processedRequests,
-                        backgroundColor: 'rgba(255, 206, 86, 0.5)'
-                    },
-                    {
-                        label: 'Processed Offers',
-                        data: data.processedOffers,
+                        label: 'Unassigned (NEW) Offers',
+                        data: data.unassignedOffers,
                         backgroundColor: 'rgba(75, 192, 192, 0.5)'
+                    },
+                    {
+                        label: 'Completed Offers',
+                        data: data.completedOffers,
+                        backgroundColor: 'rgba(153, 102, 255, 0.5)'
                     }
                 ]
             },
@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', function() {
         fetch(`/api/stats?startDate=${startDate}&endDate=${endDate}`)
             .then(response => response.json())
             .then(data => {
-                console.log('Received data:', data); // Add this line for debugging
+                console.log('Received data:', data);
                 createChart(data);
             })
             .catch(error => console.error('Error fetching stats:', error));

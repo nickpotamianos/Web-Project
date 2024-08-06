@@ -8,17 +8,17 @@ router.get('/', (req, res) => {
     const sql = `
         SELECT
             date,
-            SUM(new_requests) as new_requests,
-            SUM(processed_requests) as processed_requests,
-            SUM(new_offers) as new_offers,
-            SUM(processed_offers) as processed_offers
+            SUM(unassigned_requests) as unassigned_requests,
+            SUM(completed_requests) as completed_requests,
+            SUM(unassigned_offers) as unassigned_offers,
+            SUM(completed_offers) as completed_offers
         FROM (
             SELECT
             DATE(date_registered) as date,
-            COUNT(CASE WHEN status = 'pending' THEN 1 END) as new_requests,
-            COUNT(CASE WHEN status = 'processed' THEN 1 END) as processed_requests,
-            0 as new_offers,
-            0 as processed_offers
+            COUNT(CASE WHEN status = 'unassigned' THEN 1 END) as unassigned_requests,
+            COUNT(CASE WHEN status = 'processed' THEN 1 END) as completed_requests,
+            0 as unassigned_offers,
+            0 as completed_offers
             FROM requests
             WHERE date_registered BETWEEN ? AND ?
             GROUP BY DATE(date_registered)
@@ -27,10 +27,10 @@ router.get('/', (req, res) => {
 
             SELECT
             DATE(date_registered) as date,
-            0 as new_requests,
-            0 as processed_requests,
-            COUNT(CASE WHEN status = 'pending' THEN 1 END) as new_offers,
-            COUNT(CASE WHEN status = 'processed' THEN 1 END) as processed_offers
+            0 as unassigned_requests,
+            0 as completed_requests,
+            COUNT(CASE WHEN status = 'unassigned' THEN 1 END) as unassigned_offers,
+            COUNT(CASE WHEN status = 'processed' THEN 1 END) as completed_offers
             FROM offers
             WHERE date_registered BETWEEN ? AND ?
             GROUP BY DATE(date_registered)
@@ -47,10 +47,10 @@ router.get('/', (req, res) => {
 
         const stats = {
             labels: [],
-            newRequests: [],
-            processedRequests: [],
-            newOffers: [],
-            processedOffers: []
+            unassignedRequests: [],
+            completedRequests: [],
+            unassignedOffers: [],
+            completedOffers: []
         };
 
         results.forEach(row => {
@@ -61,10 +61,10 @@ router.get('/', (req, res) => {
             });
 
             stats.labels.push(formattedDate);
-            stats.newRequests.push(row.new_requests);
-            stats.processedRequests.push(row.processed_requests);
-            stats.newOffers.push(row.new_offers);
-            stats.processedOffers.push(row.processed_offers);
+            stats.unassignedRequests.push(row.unassigned_requests);
+            stats.completedRequests.push(row.completed_requests);
+            stats.unassignedOffers.push(row.unassigned_offers);
+            stats.completedOffers.push(row.completed_offers);
         });
 
         res.json(stats);

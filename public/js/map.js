@@ -35,6 +35,10 @@ document.addEventListener("DOMContentLoaded", function() {
     Object.values(layers).forEach(layer => map.addLayer(layer));
 
     function addMarker(item, layer, icon) {
+        if (!layers[layer]) {
+            console.warn(`Layer ${layer} does not exist`);
+            return null;
+        }
         const marker = L.marker([item.latitude, item.longitude], { icon: icon }).addTo(layers[layer]);
         marker.bindPopup(createPopupContent(item));
         return marker;
@@ -151,15 +155,17 @@ document.addEventListener("DOMContentLoaded", function() {
         data.bases.forEach(base => {
             base.type = 'base';
             const marker = addMarker(base, 'bases', icons.base);
-            marker.dragging.enable();
-            marker.on('dragend', function(event) {
-                const position = marker.getLatLng();
-                if (confirm(`Do you want to update the base location to ${position.lat.toFixed(6)}, ${position.lng.toFixed(6)}?`)) {
-                    updateBaseLocation(base.id, position.lat, position.lng);
-                } else {
-                    marker.setLatLng([base.latitude, base.longitude]);
-                }
-            });
+            if (marker && marker.dragging) {
+                marker.dragging.enable();
+                marker.on('dragend', function(event) {
+                    const position = marker.getLatLng();
+                    if (confirm(`Do you want to update the base location to ${position.lat.toFixed(6)}, ${position.lng.toFixed(6)}?`)) {
+                        updateBaseLocation(base.id, position.lat, position.lng);
+                    } else {
+                        marker.setLatLng([base.latitude, base.longitude]);
+                    }
+                });
+            }
         });
 
         // Add vehicles
@@ -290,15 +296,20 @@ document.addEventListener("DOMContentLoaded", function() {
         "Vehicles with Tasks": layers.vehiclesWithTasks,
         "Vehicles without Tasks": layers.vehiclesWithoutTasks,
         "Pending Requests": layers.requestsPending,
-        "Undertaken Requests": layers.requestsUndertaken,
         "Pending Offers": layers.offersPending,
-        "Undertaken Offers": layers.offersUndertaken,
         "Unassigned Requests": layers.requestsUnassigned,
         "Unassigned Offers": layers.offersUnassigned,
-        "Task Lines": taskLines
+        "Task Lines": taskLines,
+        "Completed Requests": layers.requestsUndertaken,
+        "Completed Offers": layers.offersUndertaken,
     };
 
     L.control.layers(null, overlays, { position: 'topright' }).addTo(map);
+
+    // Uncheck completed layers by default
+    map.removeLayer(layers.requestsUndertaken);
+    map.removeLayer(layers.offersUndertaken);
+
     /*window.assignVehicle = function(taskType, taskId) {
         const vehicleId = prompt("Enter vehicle ID:");
         if (vehicleId) {

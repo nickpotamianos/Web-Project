@@ -3,8 +3,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const itemCategory = document.getElementById('itemCategory');
     const categoryForm = document.getElementById('categoryForm');
     const categoryList = document.getElementById('categoryList');
-    const logoutButton = document.getElementById('logoutButton'); // Add this line
+    const logoutButton = document.getElementById('logoutButton');
     const warehouseList = document.getElementById('warehouseList');
+    const editDetailsPopup = document.getElementById('editDetailsPopup');
+    const editDetailsForm = document.getElementById('editDetailsForm');
+    let editDetailsFields;
 
     const categoryNicknames = {
         10: '',
@@ -55,7 +58,13 @@ document.addEventListener('DOMContentLoaded', () => {
         42: 'Μedicines'
     };
 
+    window.getCategoryNickname = function(categoryId) {
+        return categoryNicknames[categoryId] || `Category ${categoryId}`;
+    };
+
     function loadCategories() {
+        if (!categoryList || !itemCategory) return;
+
         fetch('/api/categories')
             .then(response => response.json())
             .then(data => {
@@ -95,53 +104,65 @@ document.addEventListener('DOMContentLoaded', () => {
             .catch(error => console.error('Error fetching categories:', error));
     }
 
-    categoryForm.addEventListener('submit', (event) => {
-        event.preventDefault();
-        const categoryName = document.getElementById('categoryName').value;
+    if (categoryForm) {
+        categoryForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const categoryName = document.getElementById('categoryName');
+            if (!categoryName) return;
 
-        fetch('/api/categories', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ name: categoryName })
-        })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Category added successfully:', data);
-                loadCategories();
+            fetch('/api/categories', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ name: categoryName.value })
             })
-            .catch(error => {
-                console.error('Error adding category:', error);
-            });
-    });
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Category added successfully:', data);
+                    loadCategories();
+                })
+                .catch(error => {
+                    console.error('Error adding category:', error);
+                });
+        });
+    }
 
-    itemForm.addEventListener('submit', (event) => {
-        event.preventDefault();
-        const itemName = document.getElementById('itemName').value;
-        const itemQuantity = document.getElementById('itemQuantity').value;
-        const itemCategoryValue = itemCategory.value;
+    if (itemForm) {
+        itemForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const itemName = document.getElementById('itemName');
+            const itemQuantity = document.getElementById('itemQuantity');
+            const itemDetailsInput = document.getElementById('itemDetails');
+            if (!itemName || !itemQuantity || !itemCategory || !itemDetailsInput) return;
 
-        const itemData = {
-            name: itemName,
-            category_id: itemCategoryValue,
-            quantity: itemQuantity
-        };
+            const details = itemDetailsInput.value.split(',').map(detail => {
+                const [name, value] = detail.split(':').map(s => s.trim());
+                return { detail_name: name, detail_value: value };
+            }).filter(detail => detail.detail_name && detail.detail_value);
 
-        fetch('/api/items', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(itemData)
-        })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Item added successfully:', data);
-                loadItems();
+            const itemData = {
+                name: itemName.value,
+                category_id: itemCategory.value,
+                quantity: itemQuantity.value,
+                details: details
+            };
+
+            fetch('/api/items', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(itemData)
             })
-            .catch(error => console.error('Error adding item:', error));
-    });
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Item added successfully:', data);
+                    loadItems();
+                })
+                .catch(error => console.error('Error adding item:', error));
+        });
+    }
 
     function loadItems() {
         fetch('/api/items')
@@ -153,15 +174,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     return acc;
                 }, {});
 
-                // Get all category containers
-                const allCategoryContainers = document.querySelectorAll('.item-container');
-
-                // Hide all category containers initially
-                allCategoryContainers.forEach(container => {
-                    container.style.display = 'none';
-                    container.innerHTML = 'Empty';
-                });
-
                 for (const [category, items] of Object.entries(itemsByCategory)) {
                     const itemContainer = document.getElementById(`category-${category}`);
                     if (itemContainer) {
@@ -170,16 +182,23 @@ document.addEventListener('DOMContentLoaded', () => {
                         items.forEach(item => {
                             const itemDiv = document.createElement('div');
                             itemDiv.className = 'item';
+                            itemDiv.style.display = 'grid';
+                            itemDiv.style.gridTemplateColumns = '2fr 1fr 1fr 1fr 1fr 1fr';
+                            itemDiv.style.gap = '10px';
+                            itemDiv.style.alignItems = 'center';
 
                             const details = item.details && item.details.length > 0
                                 ? item.details.map(detail => `${detail.detail_name}: ${detail.detail_value}`).join(', ')
                                 : 'No details available';
 
                             itemDiv.innerHTML = `
-                            ${item.name} Quantity: <input type="number" class="item-quantity" data-id="${item.id}" value="${item.quantity}"> - ${details}
-                            <button class="update-quantity" data-id="${item.id}">Update</button>
-                            <button class="delete-item" data-id="${item.id}">Delete</button>
-                        `;
+                                <span>${item.name}</span>
+                                <input type="number" class="item-quantity" data-id="${item.id}" value="${item.quantity}" style="width: 60px;">
+                                <span>${details}</span>
+                                <button class="update-quantity" data-id="${item.id}">Update</button>
+                                <button class="update-details" data-id="${item.id}">Update Details</button>
+                                <button class="delete-item" data-id="${item.id}">Delete</button>
+                            `;
                             itemContainer.appendChild(itemDiv);
                         });
 
@@ -189,7 +208,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
 
-                // Add event listeners for update and delete buttons
                 document.querySelectorAll('.update-quantity').forEach(button => {
                     button.addEventListener('click', updateItemQuantity);
                 });
@@ -197,8 +215,67 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.querySelectorAll('.delete-item').forEach(button => {
                     button.addEventListener('click', deleteItem);
                 });
+
+                document.querySelectorAll('.update-details').forEach(button => {
+                    button.addEventListener('click', openUpdateDetailsPopup);
+                });
             })
             .catch(error => console.error('Error fetching items:', error));
+    }
+
+    function openUpdateDetailsPopup(event) {
+        const itemId = event.target.getAttribute('data-id');
+        fetch(`/api/items/${itemId}`)
+            .then(response => response.json())
+            .then(item => {
+                const popup = document.createElement('div');
+                popup.className = 'popup';
+                popup.style.display = 'block';
+                popup.style.position = 'fixed';
+                popup.style.top = '0';
+                popup.style.left = '0';
+                popup.style.width = '100%';
+                popup.style.height = '100%';
+                popup.style.backgroundColor = 'rgba(0,0,0,0.5)';
+                popup.style.zIndex = '1000';
+                popup.innerHTML = `
+                    <div class="popup-content" style="background-color: white; padding: 20px; margin: 50px auto; width: 50%; max-width: 500px;">
+                        <h3>Edit Item Details</h3>
+                        <form id="editDetailsForm" data-item-id="${itemId}">
+                            <div id="editDetailsFields"></div>
+                            <button type="submit" id="submitUpdate" style="background-color: green;">Update Details</button>
+                            <button type="button" id="closePopup">Cancel</button>
+                        </form>
+                    </div>
+                `;
+                document.body.appendChild(popup);
+
+                editDetailsFields = popup.querySelector('#editDetailsFields');
+                const editDetailsForm = popup.querySelector('#editDetailsForm');
+                const closePopup = popup.querySelector('#closePopup');
+
+                if (item.details && item.details.length > 0) {
+                    item.details.forEach((detail, index) => {
+                        const input = document.createElement('input');
+                        input.type = 'text';
+                        input.name = `detail_${index}`;
+                        input.value = `${detail.detail_name}: ${detail.detail_value}`;
+                        editDetailsFields.appendChild(input);
+                    });
+                } else {
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.name = 'detail_0';
+                    input.value = 'New Detail: Value';
+                    editDetailsFields.appendChild(input);
+                }
+
+                editDetailsForm.addEventListener('submit', updateItemDetails);
+                closePopup.addEventListener('click', () => {
+                    document.body.removeChild(popup);
+                });
+            })
+            .catch(error => console.error('Error fetching item details:', error));
     }
 
     function updateItemQuantity(event) {
@@ -221,57 +298,80 @@ document.addEventListener('DOMContentLoaded', () => {
             .catch(error => console.error('Error updating item quantity:', error));
     }
 
-    function deleteItem(event) {
-        const itemId = event.target.getAttribute('data-id');
+    function updateItemDetails(event) {
+        event.preventDefault();
+        const itemId = event.target.getAttribute('data-item-id');
+        const updatedDetails = Array.from(event.target.querySelectorAll('input')).map(input => {
+            const [name, value] = input.value.split(':').map(str => str.trim());
+            return { detail_name: name, detail_value: value };
+        });
 
-        fetch(`/api/items/${itemId}`, {
-            method: 'DELETE'
+        fetch(`/api/items/${itemId}/details`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ details: updatedDetails })
         })
             .then(response => response.json())
             .then(data => {
-                console.log('Item deleted successfully:', data);
-
-                // Find the item element
-                const itemElement = document.querySelector(`button.delete-item[data-id="${itemId}"]`).closest('.item');
-
-                if (itemElement) {
-                    const categoryContainer = itemElement.closest('.item-container');
-                    itemElement.remove(); // Remove the item from the DOM
-
-                    if (categoryContainer) {
-                        // Check if the category is now empty
-                        if (categoryContainer.children.length === 0) {
-                            categoryContainer.innerHTML = 'Empty';
-                            categoryContainer.style.display = 'none';
-                        }
-                    }
-                }
-
-                // Optionally, you can refresh the entire item list to ensure consistency
+                document.body.removeChild(event.target.closest('.popup'));
                 loadItems();
             })
-            .catch(error => {
-                console.error('Error deleting item:', error);
-                // Optionally, show an error message to the user
-                alert('Failed to delete item. Please try again.');
-            });
+            .catch(error => console.error('Error updating item details:', error));
+    }
+
+    function deleteItem(event) {
+        const itemId = event.target.getAttribute('data-id');
+
+        if (confirm('Are you sure you want to delete this item? This action cannot be undone.')) {
+            fetch(`/api/items/${itemId}`, {
+                method: 'DELETE'
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to delete item');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const itemElement = document.querySelector(`button.delete-item[data-id="${itemId}"]`).closest('.item');
+                    if (itemElement) {
+                        itemElement.remove();
+                    }
+                    loadItems(); // Refresh the item list
+                })
+                .catch(error => {
+                    console.error('Error deleting item:', error);
+                    alert('Failed to delete item. Please try again.');
+                });
+        }
     }
 
     function deleteCategory(event) {
         const categoryId = event.target.getAttribute('data-id');
 
-        fetch(`/api/categories/${categoryId}`, {
-            method: 'DELETE'
-        })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Category deleted successfully:', data);
-                const categoryElement = document.querySelector(`button.delete-category[data-id="${categoryId}"]`).parentElement;
-                const itemContainer = document.getElementById(`category-${categoryId}`);
-                categoryElement.remove(); // Remove the category from the DOM
-                itemContainer.remove(); // Remove the items container from the DOM
+        if (confirm('Are you sure you want to delete this category? This will also delete all items in this category.')) {
+            fetch(`/api/categories/${categoryId}`, {
+                method: 'DELETE'
             })
-            .catch(error => console.error('Error deleting category:', error));
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to delete category');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const categoryElement = document.querySelector(`button.delete-category[data-id="${categoryId}"]`).parentElement;
+                    const itemContainer = document.getElementById(`category-${categoryId}`);
+                    categoryElement.remove(); // Remove the category from the DOM
+                    itemContainer.remove(); // Remove the items container from the DOM
+                })
+                .catch(error => {
+                    console.error('Error deleting category:', error);
+                    alert('Failed to delete category. Please try again.');
+                });
+        }
     }
 
     function toggleCategoryItems(categoryId) {
@@ -281,80 +381,83 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    loadCategories();
+    if (document.getElementById('uploadForm')) {
+        document.getElementById('uploadForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = new FormData();
+            const fileInput = document.getElementById('jsonFile');
+            const file = fileInput.files[0];
 
-    document.getElementById('uploadForm').addEventListener('submit', function(event) {
-        event.preventDefault();
-        const formData = new FormData();
-        const fileInput = document.getElementById('jsonFile');
-        const file = fileInput.files[0];
-
-        if (!file) {
-            alert('Please select a file');
-            return;
-        }
-
-        console.log('File selected:', file.name); // Log the selected file
-
-        formData.append('jsonFile', file);
-
-        fetch('/api/upload', {
-            method: 'POST',
-            body: formData
-        })
-            .then(response => {
-                console.log('Response received:', response.status); // Log the response status
-                return response.json();
-            })
-            .then(data => {
-                console.log('Response data:', data); // Log the response data
-                if (data.message === 'Database populated successfully from file') {
-                    alert('File uploaded and database populated successfully');
-                    loadCategories(); // Reload categories, which will also call loadItems
-                } else {
-                    alert('Error uploading file: ' + data.error);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Failed to upload file');
-            });
-    });
-
-    document.getElementById('clearFileButton').addEventListener('click', function() {
-        const fileInput = document.getElementById('jsonFile');
-        fileInput.value = ''; // Clear the file input
-        console.log('File input cleared'); // Log the file input clear action
-    });
-
-    document.getElementById('loadFromUrlButton').addEventListener('click', function() {
-        fetch('/api/populate')
-            .then(response => response.json())
-            .then(data => {
-                if (data.message === 'Database populated successfully') {
-                    alert('Data loaded successfully from URL');
-                    loadCategories(); // Reload categories, which will also call loadItems
-                } else {
-                    alert('Error loading data from URL');
-                }
-            })
-            .catch(error => console.error('Error:', error));
-    });
-
-    logoutButton.addEventListener('click', function() {
-        fetch('/api/logout', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
+            if (!file) {
+                alert('Please select a file');
+                return;
             }
-        })
-            .then(response => {
-                if (response.ok) {
-                    window.location.href = '/login.html';
-                } else {
-                    alert('Logout failed');
+
+            formData.append('jsonFile', file);
+
+            fetch('/api/upload', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message === 'Database populated successfully from file') {
+                        alert('File uploaded and database populated successfully');
+                        loadCategories(); // Reload categories, which will also call loadItems
+                    } else {
+                        alert('Error uploading file: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Failed to upload file');
+                });
+        });
+    }
+
+    if (document.getElementById('clearFileButton')) {
+        document.getElementById('clearFileButton').addEventListener('click', function() {
+            const fileInput = document.getElementById('jsonFile');
+            fileInput.value = ''; // Clear the file input
+        });
+    }
+
+    if (document.getElementById('loadFromUrlButton')) {
+        document.getElementById('loadFromUrlButton').addEventListener('click', function() {
+            fetch('/api/populate')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message === 'Database populated successfully') {
+                        alert('Data loaded successfully from URL');
+                        loadCategories(); // Reload categories, which will also call loadItems
+                    } else {
+                        alert('Error loading data from URL');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        });
+    }
+
+    if (logoutButton) {
+        logoutButton.addEventListener('click', function() {
+            fetch('/api/logout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
                 }
             })
-            .catch(error => console.error('Error logging out:', error));
-    });
+                .then(response => {
+                    if (response.ok) {
+                        window.location.href = '/login.html';
+                    } else {
+                        alert('Logout failed');
+                    }
+                })
+                .catch(error => console.error('Error logging out:', error));
+        });
+    }
+
+    if (categoryList && itemCategory) {
+        loadCategories();
+    }
 });

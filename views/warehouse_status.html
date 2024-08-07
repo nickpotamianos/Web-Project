@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="/css/styles.css">
     <link rel="stylesheet" href="/css/warehouse_status.css">
     <link rel="stylesheet" href="/css/admin_dashboard.css">
+    <link rel="stylesheet" href="/css/warehouse_status.css">
     <link rel="icon" type="image/png" href="/images/logo.png">
 
 </head>
@@ -27,11 +28,16 @@
         <button id="logoutButton" class="logout-button">Logout</button>
     </nav>
 </header>
-<main>
+<main role="main">
     <h2>Warehouse Status</h2>
+
     <div id="category-filter">
-        <!-- Category checkboxes will be dynamically added here -->
+        <h3>Filter by Category <span id="toggle-filter">▼</span></h3>
+        <div id="category-list" class="checkbox-group">
+            <!-- Checkboxes will be dynamically added here -->
+        </div>
     </div>
+
     <table id="warehouse-table">
         <thead>
         <tr>
@@ -48,5 +54,6 @@
     </table>
 </main>
 <script src="/js/warehouse_status.js"></script>
+<script src="/js/admin_dashboard.js"></script>
 </body>
 </html>

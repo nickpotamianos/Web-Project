@@ -164,7 +164,13 @@ button:hover {
 .update-quantity:hover {
     background-color: #1f5fd1;
 }
-
+.update-details{
+    background-color: green;
+    width: auto;
+}
+.update-details:hover{
+    background-color: darkgreen;
+}
 .item-quantity {
     width: auto;
 }

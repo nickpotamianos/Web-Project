@@ -1,59 +1,97 @@
-.form-container {
-    max-width: 10000px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-}
 .form-group {
-    margin-bottom: 20px;
+    margin-bottom: 25px;
 }
+
 .form-group label {
     display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-    width: 100%;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #333;
+    font-size: 0.95rem;
 }
+
 .form-group input[type="text"],
 .form-group textarea {
     width: 100%;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 16px;
+    padding: 12px;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: border-color 0.3s, box-shadow 0.3s;
 }
+
+.form-group input[type="text"]:focus,
+.form-group textarea:focus {
+    border-color: #2575fc;
+    box-shadow: 0 0 0 3px rgba(37, 117, 252, 0.1);
+    outline: none;
+}
+
 .form-group textarea {
-    height: 100px;
+    height: 120px;
     resize: vertical;
 }
+
 .checkbox-group {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
 }
+
 .checkbox-item {
     display: flex;
     align-items: center;
-    margin-right: 20px;
 }
+
 .checkbox-item input[type="checkbox"] {
-    margin-right: 5px;
+    margin-right: 10px;
+    appearance: none;
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #2575fc;
+    border-radius: 4px;
+    cursor: pointer;
+    position: relative;
+    transition: background-color 0.2s;
 }
+
+.checkbox-item input[type="checkbox"]:checked {
+    background-color: #2575fc;
+}
+
+.checkbox-item input[type="checkbox"]:checked::after {
+    content: '✓';
+    position: absolute;
+    color: white;
+    font-size: 16px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.checkbox-item label {
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
 button[type="submit"] {
     background-color: #2575fc;
     color: white;
-    padding: 12px 20px;
+    padding: 12px 24px;
     border: none;
-    border-radius: 4px;
+    border-radius: 6px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: background-color 0.3s, transform 0.1s;
 }
+
 button[type="submit"]:hover {
     background-color: #1f5fd1;
 }
-#announcementMessage {
-    margin-top: 20px;
-    padding: 10px;
-    border-radius: 4px;
+
+button[type="submit"]:active {
+    transform: translateY(1px);
 }
+

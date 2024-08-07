@@ -54,53 +54,134 @@ router.put('/:id', (req, res) => {
 router.delete('/:id', (req, res) => {
     const { id } = req.params;
 
-    const deleteItemDetailsSql = 'DELETE FROM item_details WHERE item_id IN (SELECT id FROM items WHERE category_id = ?)';
-    const deleteItemsSql = 'DELETE FROM items WHERE category_id = ?';
-    const deleteCategorySql = 'DELETE FROM categories WHERE id = ?';
-
-    connection.beginTransaction((transactionErr) => {
-        if (transactionErr) {
-            console.error('Transaction error: ', transactionErr);
-            res.status(500).json({ error: 'Error starting transaction' });
-            return;
+    connection.beginTransaction((err) => {
+        if (err) {
+            console.error('Error starting transaction:', err);
+            return res.status(500).json({ error: 'Error starting transaction' });
         }
 
-        connection.query(deleteItemDetailsSql, [id], (err, results) => {
+        // Get all items in the category
+        const getItemsSql = 'SELECT id FROM items WHERE category_id = ?';
+        connection.query(getItemsSql, [id], (err, items) => {
             if (err) {
                 return connection.rollback(() => {
-                    console.error('Database error: ', err);
-                    res.status(500).json({ error: 'Error deleting item details' });
+                    console.error('Error fetching items in category:', err);
+                    res.status(500).json({ error: 'Error fetching items in category' });
                 });
             }
 
-            connection.query(deleteItemsSql, [id], (err, results) => {
-                if (err) {
-                    return connection.rollback(() => {
-                        console.error('Database error: ', err);
-                        res.status(500).json({ error: 'Error deleting items' });
-                    });
-                }
+            const itemIds = items.map(item => item.id);
 
-                connection.query(deleteCategorySql, [id], (err, results) => {
+            // If there are no items, skip deleting from related tables
+            if (itemIds.length === 0) {
+                // Delete the category directly
+                const deleteCategorySql = 'DELETE FROM categories WHERE id = ?';
+                connection.query(deleteCategorySql, [id], (err) => {
                     if (err) {
                         return connection.rollback(() => {
-                            console.error('Database error: ', err);
+                            console.error('Error deleting category:', err);
                             res.status(500).json({ error: 'Error deleting category' });
                         });
                     }
 
-                    connection.commit((commitErr) => {
-                        if (commitErr) {
+                    connection.commit((err) => {
+                        if (err) {
                             return connection.rollback(() => {
-                                console.error('Commit error: ', commitErr);
+                                console.error('Error committing transaction:', err);
                                 res.status(500).json({ error: 'Error committing transaction' });
                             });
                         }
-
                         res.status(200).json({ message: 'Category deleted successfully' });
                     });
                 });
-            });
+            } else {
+                // Continue with existing logic for deleting related data
+                const deleteAnnouncementItemsSql = 'DELETE FROM announcement_items WHERE item_id IN (?)';
+                connection.query(deleteAnnouncementItemsSql, [itemIds], (err) => {
+                    if (err) {
+                        return connection.rollback(() => {
+                            console.error('Error deleting related announcement items:', err);
+                            res.status(500).json({ error: 'Error deleting related announcement items' });
+                        });
+                    }
+
+                    // Delete related offers
+                    const deleteOffersSql = 'DELETE FROM offers WHERE item_id IN (?)';
+                    connection.query(deleteOffersSql, [itemIds], (err) => {
+                        if (err) {
+                            return connection.rollback(() => {
+                                console.error('Error deleting related offers:', err);
+                                res.status(500).json({ error: 'Error deleting related offers' });
+                            });
+                        }
+
+                        // Delete related requests
+                        const deleteRequestsSql = 'DELETE FROM requests WHERE item_id IN (?)';
+                        connection.query(deleteRequestsSql, [itemIds], (err) => {
+                            if (err) {
+                                return connection.rollback(() => {
+                                    console.error('Error deleting related requests:', err);
+                                    res.status(500).json({ error: 'Error deleting related requests' });
+                                });
+                            }
+
+                            // Delete item details
+                            const deleteDetailsSql = 'DELETE FROM item_details WHERE item_id IN (?)';
+                            connection.query(deleteDetailsSql, [itemIds], (err) => {
+                                if (err) {
+                                    return connection.rollback(() => {
+                                        console.error('Error deleting item details:', err);
+                                        res.status(500).json({ error: 'Error deleting item details' });
+                                    });
+                                }
+
+                                // Delete from warehouse
+                                const deleteWarehouseSql = 'DELETE FROM warehouse WHERE item_id IN (?)';
+                                connection.query(deleteWarehouseSql, [itemIds], (err) => {
+                                    if (err) {
+                                        return connection.rollback(() => {
+                                            console.error('Error deleting from warehouse:', err);
+                                            res.status(500).json({ error: 'Error deleting from warehouse' });
+                                        });
+                                    }
+
+                                    // Delete items
+                                    const deleteItemsSql = 'DELETE FROM items WHERE category_id = ?';
+                                    connection.query(deleteItemsSql, [id], (err) => {
+                                        if (err) {
+                                            return connection.rollback(() => {
+                                                console.error('Error deleting items:', err);
+                                                res.status(500).json({ error: 'Error deleting items' });
+                                            });
+                                        }
+
+                                        // Finally, delete the category
+                                        const deleteCategorySql = 'DELETE FROM categories WHERE id = ?';
+                                        connection.query(deleteCategorySql, [id], (err) => {
+                                            if (err) {
+                                                return connection.rollback(() => {
+                                                    console.error('Error deleting category:', err);
+                                                    res.status(500).json({ error: 'Error deleting category' });
+                                                });
+                                            }
+
+                                            connection.commit((err) => {
+                                                if (err) {
+                                                    return connection.rollback(() => {
+                                                        console.error('Error committing transaction:', err);
+                                                        res.status(500).json({ error: 'Error committing transaction' });
+                                                    });
+                                                }
+                                                res.status(200).json({ message: 'Category and related items deleted successfully' });
+                                            });
+                                        });
+                                    });
+                                });
+                            });
+                        });
+                    });
+                });
+            }
         });
     });
 });

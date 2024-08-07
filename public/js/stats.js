@@ -71,4 +71,25 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('startDate').value = startDate;
     document.getElementById('endDate').value = endDate;
     fetchData(startDate, endDate);
+    if (logoutButton) {
+        logoutButton.addEventListener('click', function() {
+            console.log('Logout button clicked');
+            fetch('/api/logout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.href = '/login.html';
+                    } else {
+                        alert('Logout failed');
+                    }
+                })
+                .catch(error => console.error('Error logging out:', error));
+        });
+    } else {
+        console.error('Logout button not found');
+    }
 });

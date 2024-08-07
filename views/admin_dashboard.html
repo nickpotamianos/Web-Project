@@ -27,20 +27,17 @@
     </nav>
 </header>
 <main>
-    <section id="items">
+    <div id="items" class="section">
         <h2>Items Management</h2>
         <form id="itemForm">
             <input type="text" id="itemName" placeholder="Item Name" required>
+            <select id="itemCategory" required></select>
             <input type="number" id="itemQuantity" placeholder="Quantity" required>
-            <select id="itemCategory">
-                <!-- Options will be populated dynamically -->
-            </select>
+            <input type="text" id="itemDetails" placeholder="Item Details (name:value, separated by commas)">
             <button type="submit">Add Item</button>
         </form>
-        <div id="itemList">
-            <!-- Item list will be displayed here -->
-        </div>
-    </section>
+        <div id="itemList"></div>
+    </div>
     <section id="categories">
         <h2>Categories Management</h2>
         <form id="categoryForm">

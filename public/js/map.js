@@ -333,5 +333,26 @@ document.addEventListener("DOMContentLoaded", function() {
                 });
         }
     }*/
+    if (logoutButton) {
+        logoutButton.addEventListener('click', function() {
+            console.log('Logout button clicked');
+            fetch('/api/logout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.href = '/login.html';
+                    } else {
+                        alert('Logout failed');
+                    }
+                })
+                .catch(error => console.error('Error logging out:', error));
+        });
+    } else {
+        console.error('Logout button not found');
+    }
 });
 

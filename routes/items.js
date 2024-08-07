@@ -46,17 +46,62 @@ router.get('/', (req, res) => {
 
 // Add a new item
 router.post('/', (req, res) => {
-    const { name, category_id, quantity } = req.body;
+    const { name, category_id, quantity, details } = req.body;
     if (!name || !category_id || quantity === undefined) {
         return res.status(400).json({ error: 'Missing required fields' });
     }
-    const sql = 'INSERT INTO items (name, category_id, quantity) VALUES (?, ?, ?)';
-    connection.query(sql, [name, category_id, quantity], (err, results) => {
+
+    connection.beginTransaction((err) => {
         if (err) {
-            console.error('Database error: ', err);
-            return res.status(500).json({ error: 'Error adding item' });
+            return res.status(500).json({ error: 'Error starting transaction' });
         }
-        res.status(201).json({ message: 'Item added successfully', itemId: results.insertId });
+
+        const sql = 'INSERT INTO items (name, category_id, quantity) VALUES (?, ?, ?)';
+        connection.query(sql, [name, category_id, quantity], (err, results) => {
+            if (err) {
+                return connection.rollback(() => {
+                    console.error('Database error: ', err);
+                    res.status(500).json({ error: 'Error adding item' });
+                });
+            }
+
+            const itemId = results.insertId;
+
+            // If details are provided, insert them into item_details table
+            if (details && details.length > 0) {
+                const detailsSql = 'INSERT INTO item_details (item_id, detail_name, detail_value) VALUES ?';
+                const detailsValues = details.map(detail => [itemId, detail.detail_name, detail.detail_value]);
+
+                connection.query(detailsSql, [detailsValues], (err) => {
+                    if (err) {
+                        return connection.rollback(() => {
+                            console.error('Database error: ', err);
+                            res.status(500).json({ error: 'Error adding item details' });
+                        });
+                    }
+
+                    connection.commit((err) => {
+                        if (err) {
+                            return connection.rollback(() => {
+                                console.error('Commit error: ', err);
+                                res.status(500).json({ error: 'Error committing transaction' });
+                            });
+                        }
+                        res.status(201).json({ message: 'Item added successfully', itemId: itemId });
+                    });
+                });
+            } else {
+                connection.commit((err) => {
+                    if (err) {
+                        return connection.rollback(() => {
+                            console.error('Commit error: ', err);
+                            res.status(500).json({ error: 'Error committing transaction' });
+                        });
+                    }
+                    res.status(201).json({ message: 'Item added successfully', itemId: itemId });
+                });
+            }
+        });
     });
 });
 
@@ -95,8 +140,71 @@ router.put('/:id/quantity', (req, res) => {
         res.status(200).json({ message: 'Item quantity updated successfully' });
     });
 });
+// New route to update item details
+router.put('/:id/details', (req, res) => {
+    const { id } = req.params;
+    const { details } = req.body;
 
+    if (!details || !Array.isArray(details)) {
+        return res.status(400).json({ error: 'Invalid details format' });
+    }
+
+    connection.beginTransaction((err) => {
+        if (err) {
+            console.error('Error starting transaction:', err);
+            return res.status(500).json({ error: 'Error starting transaction' });
+        }
+
+        // First, delete existing details for the item
+        const deleteDetailsSql = 'DELETE FROM item_details WHERE item_id = ?';
+        connection.query(deleteDetailsSql, [id], (err) => {
+            if (err) {
+                return connection.rollback(() => {
+                    console.error('Error deleting existing item details:', err);
+                    res.status(500).json({ error: 'Error deleting existing item details' });
+                });
+            }
+
+            // Then, insert new details
+            if (details.length > 0) {
+                const insertDetailsSql = 'INSERT INTO item_details (item_id, detail_name, detail_value) VALUES ?';
+                const detailsValues = details.map(detail => [id, detail.detail_name, detail.detail_value]);
+
+                connection.query(insertDetailsSql, [detailsValues], (err) => {
+                    if (err) {
+                        return connection.rollback(() => {
+                            console.error('Error inserting new item details:', err);
+                            res.status(500).json({ error: 'Error inserting new item details' });
+                        });
+                    }
+
+                    connection.commit((err) => {
+                        if (err) {
+                            return connection.rollback(() => {
+                                console.error('Error committing transaction:', err);
+                                res.status(500).json({ error: 'Error committing transaction' });
+                            });
+                        }
+                        res.status(200).json({ message: 'Item details updated successfully' });
+                    });
+                });
+            } else {
+                // If no new details, just commit the transaction
+                connection.commit((err) => {
+                    if (err) {
+                        return connection.rollback(() => {
+                            console.error('Error committing transaction:', err);
+                            res.status(500).json({ error: 'Error committing transaction' });
+                        });
+                    }
+                    res.status(200).json({ message: 'Item details updated successfully' });
+                });
+            }
+        });
+    });
+});
 // Delete an item
+// Delete an individual item
 // Delete an individual item
 router.delete('/:id', (req, res) => {
     const { id } = req.params;
@@ -107,50 +215,82 @@ router.delete('/:id', (req, res) => {
             return res.status(500).json({ error: 'Error starting transaction' });
         }
 
-                // Delete item details
-                const deleteDetailsSql = 'DELETE FROM item_details WHERE item_id = ?';
-                connection.query(deleteDetailsSql, [id], (err) => {
+        // Delete related offers
+        const deleteOffersSql = 'DELETE FROM offers WHERE item_id = ?';
+        connection.query(deleteOffersSql, [id], (err) => {
+            if (err) {
+                return connection.rollback(() => {
+                    console.error('Error deleting related offers:', err);
+                    res.status(500).json({ error: 'Error deleting related offers' });
+                });
+            }
+
+            // Delete related requests
+            const deleteRequestsSql = 'DELETE FROM requests WHERE item_id = ?';
+            connection.query(deleteRequestsSql, [id], (err) => {
+                if (err) {
+                    return connection.rollback(() => {
+                        console.error('Error deleting related requests:', err);
+                        res.status(500).json({ error: 'Error deleting related requests' });
+                    });
+                }
+
+                // Delete from announcement_items
+                const deleteAnnouncementItemsSql = 'DELETE FROM announcement_items WHERE item_id = ?';
+                connection.query(deleteAnnouncementItemsSql, [id], (err) => {
                     if (err) {
                         return connection.rollback(() => {
-                            console.error('Error deleting item details:', err);
-                            res.status(500).json({ error: 'Error deleting item details' });
+                            console.error('Error deleting from announcement_items:', err);
+                            res.status(500).json({ error: 'Error deleting from announcement_items' });
                         });
                     }
 
-                    // Delete from warehouse
-                    const deleteWarehouseSql = 'DELETE FROM warehouse WHERE item_id = ?';
-                    connection.query(deleteWarehouseSql, [id], (err) => {
+                    // Delete item details
+                    const deleteDetailsSql = 'DELETE FROM item_details WHERE item_id = ?';
+                    connection.query(deleteDetailsSql, [id], (err) => {
                         if (err) {
                             return connection.rollback(() => {
-                                console.error('Error deleting from warehouse:', err);
-                                res.status(500).json({ error: 'Error deleting from warehouse' });
+                                console.error('Error deleting item details:', err);
+                                res.status(500).json({ error: 'Error deleting item details' });
                             });
                         }
 
-                        // Finally, delete the item
-                        const deleteItemSql = 'DELETE FROM items WHERE id = ?';
-                        connection.query(deleteItemSql, [id], (err) => {
+                        // Delete from warehouse
+                        const deleteWarehouseSql = 'DELETE FROM warehouse WHERE item_id = ?';
+                        connection.query(deleteWarehouseSql, [id], (err) => {
                             if (err) {
                                 return connection.rollback(() => {
-                                    console.error('Error deleting item:', err);
-                                    res.status(500).json({ error: 'Error deleting item' });
+                                    console.error('Error deleting from warehouse:', err);
+                                    res.status(500).json({ error: 'Error deleting from warehouse' });
                                 });
                             }
 
-                            connection.commit((err) => {
+                            // Finally, delete the item
+                            const deleteItemSql = 'DELETE FROM items WHERE id = ?';
+                            connection.query(deleteItemSql, [id], (err) => {
                                 if (err) {
                                     return connection.rollback(() => {
-                                        console.error('Error committing transaction:', err);
-                                        res.status(500).json({ error: 'Error committing transaction' });
+                                        console.error('Error deleting item:', err);
+                                        res.status(500).json({ error: 'Error deleting item' });
                                     });
                                 }
-                                res.status(200).json({ message: 'Item deleted successfully' });
+
+                                connection.commit((err) => {
+                                    if (err) {
+                                        return connection.rollback(() => {
+                                            console.error('Error committing transaction:', err);
+                                            res.status(500).json({ error: 'Error committing transaction' });
+                                        });
+                                    }
+                                    res.status(200).json({ message: 'Item deleted successfully' });
+                                });
                             });
                         });
                     });
                 });
             });
-
+        });
+    });
 });
 
 // Delete a category and all its items
@@ -414,6 +554,33 @@ router.get('/:id/total-quantity', (req, res) => {
         });
     });
 });
+router.get('/:id', (req, res) => {
+    const { id } = req.params;
+    const itemSql = 'SELECT * FROM items WHERE id = ?';
+    const detailsSql = 'SELECT * FROM item_details WHERE item_id = ?';
 
+    connection.query(itemSql, [id], (err, items) => {
+        if (err) {
+            console.error('Database error: ', err);
+            return res.status(500).json({ error: 'Error fetching item' });
+        }
+
+        if (items.length === 0) {
+            return res.status(404).json({ error: 'Item not found' });
+        }
+
+        connection.query(detailsSql, [id], (err, details) => {
+            if (err) {
+                console.error('Error fetching item details:', err);
+                return res.status(500).json({ error: 'Error fetching item details' });
+            }
+
+            const item = items[0];
+            item.details = details;
+
+            res.status(200).json(item);
+        });
+    });
+});
 
 module.exports = router;

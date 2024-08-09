@@ -116,7 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return distance <= 100;
     }
 
-    loadButton.addEventListener('click', () => {
+    window.loadButtonHandler = () => {
         if (!isWithin100Meters()) {
             alert('Your vehicle is more than 100m away from the base.');
             return;
@@ -152,9 +152,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert('Quantity must be a positive integer.');
             }
         }
-    });
+    };
 
-    unloadButton.addEventListener('click', () => {
+    window.unloadButtonHandler = () => {
         if (!isWithin100Meters()) {
             alert('Your vehicle is more than 100m away from the base.');
             return;
@@ -190,7 +190,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert('Quantity must be a positive integer.');
             }
         }
-    });
+    };
+
+    loadButton.addEventListener('click', window.loadButtonHandler);
+    unloadButton.addEventListener('click', window.unloadButtonHandler);
 
     // Add event listener to the map link
     document.querySelector('nav a[href="/rescuer_dashboard/rescuerMap.html"]').addEventListener('click', (e) => {

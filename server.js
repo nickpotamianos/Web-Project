@@ -30,20 +30,7 @@ app.use(fileUpload());
 
 
 // Database connection
-const connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'drcp'
-});
-
-connection.connect((err) => {
-    if (err) {
-        console.error('Error connecting to the database:', err.stack);
-        return;
-    }
-    console.log('Successfully connected to the database with ID ' + connection.threadId);
-});
+const connection = require('./db');
 
 // Session store
 const sessionStore = new MySQLStore({}, connection);

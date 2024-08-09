@@ -1,3 +1,5 @@
+const express = require('express');
+const router = express.Router();
 const connection = require('../db');
 
 function updateItemQuantity(itemId, newQuantityBase, callback) {
@@ -131,8 +133,46 @@ function moveItemFromVehicle(itemId, quantity, vehicleId, callback) {
     });
 }
 
+// Route to get items in the rescuer's vehicle
+router.get('/vehicle-items', (req, res) => {
+    const vehicleId = req.query.vehicleId; // Get vehicle ID from query parameter
+    const sql = 'SELECT * FROM items WHERE vehicle_id = ?';
+
+    connection.query(sql, [vehicleId], (err, results) => {
+        if (err) {
+            return res.status(500).json({ error: 'Database error', details: err.message });
+        }
+        res.json(results);
+    });
+});
+
+// Route to load items to the vehicle
+router.post('/load-items', (req, res) => {
+    const { itemId, quantity, vehicleId } = req.body;
+
+    moveItemToVehicle(itemId, quantity, vehicleId, (err, message) => {
+        if (err) {
+            return res.status(500).json({ error: 'Error loading items', details: err.message });
+        }
+        res.json({ message });
+    });
+});
+
+// Route to unload items from the vehicle
+router.post('/unload-items', (req, res) => {
+    const { itemId, quantity, vehicleId } = req.body;
+
+    moveItemFromVehicle(itemId, quantity, vehicleId, (err, message) => {
+        if (err) {
+            return res.status(500).json({ error: 'Error unloading items', details: err.message });
+        }
+        res.json({ message });
+    });
+});
+
 module.exports = {
     updateItemQuantity,
     moveItemToVehicle,
-    moveItemFromVehicle
+    moveItemFromVehicle,
+    router
 };

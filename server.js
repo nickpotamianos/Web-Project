@@ -17,6 +17,8 @@ const taskAssignmentRoutes = require('./routes/taskAssignment');
 const warehouseStatusRoutes = require('./routes/warehouse_status');
 const announcementRoutes = require('./routes/announcements');
 const statsRoutes = require('./routes/stats');
+const rescuerOperations = require('./routes/rescuerOperations'); // Import the new route file
+const rescuerMapRoutes = require('./routes/rescuerMap'); // Import the new rescuer map route file
 
 
 const app = express();
@@ -73,7 +75,14 @@ function isAdmin(req, res, next) {
         res.status(403).send('Forbidden');
     }
 }
-
+// Middleware to check if the user is a rescuer
+function isRescuer(req, res, next) {
+    if (req.session.user && req.session.user.role === 'rescuer') {
+        return next();
+    } else {
+        res.status(403).send('Forbidden');
+    }
+}
 // Use API routes
 app.use('/api/items', itemRoutes);
 app.use('/api/categories', categoryRoutes);
@@ -86,6 +95,9 @@ app.use('/api/warehouse-status', warehouseStatusRoutes);
 app.use('/api/mapdata', mapdataRoutes);
 app.use('/api/announcements', announcementRoutes);
 app.use('/api/stats', statsRoutes);
+app.use('/api/rescuer', isAuthenticated, isRescuer, rescuerOperations); // Use the new route with authentication
+app.use('/api/rescuerMap', isAuthenticated, isRescuer, rescuerMapRoutes); // Use the new rescuer map route with authentication
+
 
 // Serve static files from the "public" directory
 app.use(express.static(path.join(__dirname, 'public')));
@@ -135,6 +147,20 @@ app.get('/admin_dashboard.html', isAuthenticated, isAdmin, (req, res) => {
 app.get('/admin_dashboard/map.html', isAuthenticated, isAdmin, (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'map.html'));
 });
+// ANDREAS & GREG RESCUER
+// Serve protected HTML file for rescuer dashboard
+app.get('/rescuer_dashboard', isAuthenticated, isRescuer, (req, res) => {
+    res.sendFile(path.join(__dirname, 'views', 'rescuer_dashboard.html'));
+});
+
+app.get('/rescuer_dashboard.html', isAuthenticated, isRescuer, (req, res) => {
+    res.sendFile(path.join(__dirname, 'views', 'rescuer_dashboard.html'));
+});
+
+// Serve protected HTML file for rescuer map view
+app.get('/rescuer_dashboard/rescuerMap.html', isAuthenticated, isRescuer, (req, res) => {
+    res.sendFile(path.join(__dirname, 'views', 'rescuerMap.html'));
+});
 app.get('/admin_dashboard/rescuer_management.html', isAuthenticated, isAdmin, (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'rescuer_management.html'));
 });
@@ -164,10 +190,25 @@ app.post('/login', (req, res) => {
         if (results.length > 0) {
             const user = results[0];
             req.session.user = user;
-            return res.status(200).json({
-                message: 'Login successful',
-                role: user.role // Include the user's role in the response
-            });
+            if (user.role === 'rescuer') {
+                const vehicleSql = 'SELECT * FROM vehicles WHERE user_id = ?';
+                connection.query(vehicleSql, [user.id], (err, vehicleResults) => {
+                    if (err) {
+                        return res.status(500).json({ error: 'Error fetching vehicle information' });
+                    }
+                    const vehicle = vehicleResults[0];
+                    return res.status(200).json({
+                        message: 'Login successful',
+                        role: user.role, // Include the user's role in the response
+                        vehicle: vehicle // Include the vehicle information in the response
+                    });
+                });
+            } else {
+                return res.status(200).json({
+                    message: 'Login successful',
+                    role: user.role // Include the user's role in the response
+                });
+            }
         } else {
             return res.status(401).json({ error: 'Invalid email or password' });
         }

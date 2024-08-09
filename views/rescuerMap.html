@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rescuer Dashboard - Map View</title>
+    <link rel="icon" type="image/png" href="/images/logo.png">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"/>
+    <link rel="stylesheet" href="/css/styles.css"/>
+    <link rel="stylesheet" href="/css/map.css"/>
+</head>
+<body>
+<header>
+    <h1>Rescuer Dashboard</h1>
+    <nav>
+        <div class="nav-container">
+            <ul>
+                <li><a href="/rescuer_dashboard.html">Dashboard</a></li>
+                <li><a href="/rescuer_dashboard/rescuerMap.html">Map View</a></li>
+            </ul>
+        </div>
+        <button id="logoutButton" class="logout-button">Logout</button>
+    </nav>
+</header>
+<div id="mapid" style="height: 500px; margin-top: 20px;"></div>
+<div id="current-tasks"></div>
+<main>
+      <h2>Current Tasks</h2>
+      <div id="task-list"></div>
+</main>
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<script src="/js/rescuer_map.js"></script>
+<script>
+    function displayTasks(tasks) {
+        const taskList = document.getElementById('task-list');
+        taskList.innerHTML = '';
+
+        tasks.forEach(task => {
+            const taskBox = document.createElement('div');
+            taskBox.className = 'task-box';
+
+            const citizenNameRow = document.createElement('div');
+            citizenNameRow.className = 'row';
+            citizenNameRow.innerHTML = `<span>Citizen Name:</span><span>${task.citizenName}</span>`;
+
+            const phoneRow = document.createElement('div');
+            phoneRow.className = 'row';
+            phoneRow.innerHTML = `<span>Phone:</span><span>${task.phone}</span>`;
+
+            const dateRow = document.createElement('div');
+            dateRow.className = 'row';
+            const formattedDate = new Date(task.date).toLocaleString();
+            dateRow.innerHTML = `<span>Date of Entry:</span><span>${formattedDate}</span>`;
+
+            const typeRow = document.createElement('div');
+            typeRow.className = 'row';
+            typeRow.innerHTML = `<span>Type:</span><span>${task.type}</span>`;
+
+            const itemRow = document.createElement('div');
+            itemRow.className = 'row';
+            itemRow.innerHTML = `<span>Item:</span><span>${task.itemName}</span>`;
+
+            const quantityRow = document.createElement('div');
+            quantityRow.className = 'row';
+            quantityRow.innerHTML = `<span>Quantity:</span><span>${task.quantity}</span>`;
+
+            const statusRow = document.createElement('div');
+            statusRow.className = 'row';
+            statusRow.innerHTML = `<span>Status:</span><span>${task.status}</span>`;
+
+            const buttonsDiv = document.createElement('div');
+            buttonsDiv.className = 'buttons';
+            buttonsDiv.innerHTML = `
+                <button class="completed" onclick="completeTask(${task.id}, '${task.type}')">Completed</button>
+                <button class="cancelled" onclick="cancelTask(${task.id}, '${task.type}')">Cancel</button>
+            `;
+
+            taskBox.appendChild(citizenNameRow);
+            taskBox.appendChild(phoneRow);
+            taskBox.appendChild(dateRow);
+            taskBox.appendChild(typeRow);
+            taskBox.appendChild(itemRow);
+            taskBox.appendChild(quantityRow);
+            taskBox.appendChild(statusRow);
+            taskBox.appendChild(buttonsDiv);
+
+            taskList.appendChild(taskBox);
+        });
+    }
+</script>
+</body>
+</html>

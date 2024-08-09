@@ -33,8 +33,7 @@ router.get('/', (req, res) => {
              WHERE FIND_IN_SET(r.id, v2.assigned_task_id) > 0 
                AND v2.assigned_task_type LIKE '%request%'
              LIMIT 1)
-        ) as vehicle, 
-        r.collection_date 
+        ) as vehicle
     FROM requests r 
     LEFT JOIN users u ON r.user_id = u.id 
     LEFT JOIN items i ON r.item_id = i.id 

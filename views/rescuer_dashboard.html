@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rescuer Dashboard</title>
     <link rel="icon" type="image/png" href="/images/logo.png">
+    <link rel="stylesheet" href="/css/rescuer_dashboard.css">
     <link rel="stylesheet" href="/css/styles.css">
     <link rel="stylesheet" href="/css/admin_dashboard.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
@@ -21,9 +22,9 @@
     <nav>
         <div class="nav-container">
             <ul>
-                <li><a href="#vehicle-list">Vehicles</a></li>
-                <li><a href="#items-list">Items</a></li>
-                <li><a href="/rescuer_dashboard/rescuerMap.html">Map</a></li> <!-- Updated Map link -->
+                <li><a href="/rescuer_dashboard.html#vehicle-list">Vehicles</a></li>
+                <li><a href="/rescuer_dashboard.html#items-list">Items</a></li>
+                <li><a href="/rescuer_dashboard/rescuerMap.html">Map</a></li>
             </ul>
         </div>
         <button id="logoutButton" class="logout-button">Logout</button>
@@ -37,9 +38,7 @@
                 <div>ID</div>
                 <div>Name</div>
                 <div>Status</div>
-                <div>Latitude</div>
-                <div>Longitude</div>
-                <div>Inventory</div>
+                <div>(Item ID) Inventory</div>
                 <div>Assigned Task ID</div>
                 <div>Assigned Task Type</div>
             </li>
@@ -66,5 +65,6 @@
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script src="/js/rescuer_dashboard.js"></script>
+<script src="/js/admin_dashboard.js"></script>
 </body>
 </html>

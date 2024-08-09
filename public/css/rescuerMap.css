@@ -1,0 +1,95 @@
+/* Rescuer Map View Styles */
+main {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    color: #333;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+#mapid {
+    height: 500px;
+    margin-top: 20px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+#current-tasks {
+    margin-top: 20px;
+}
+
+#task-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.task-box {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    padding: 15px;
+}
+
+.row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+}
+
+.row span:first-child {
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.buttons {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 10px;
+}
+
+button {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+.completed {
+    background-color: #2ecc71;
+    color: white;
+    margin-right: 10px;
+}
+
+.completed:hover {
+    background-color: #27ae60;
+}
+
+.cancelled {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.cancelled:hover {
+    background-color: #c0392b;
+}
+
+@media (max-width: 768px) {
+    .buttons {
+        flex-direction: column;
+    }
+
+    button {
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+}

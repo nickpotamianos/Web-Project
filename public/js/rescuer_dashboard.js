@@ -21,16 +21,30 @@ document.addEventListener('DOMContentLoaded', () => {
     fetch('/api/rescuer/items')
         .then(response => response.json())
         .then(data => {
-            itemsData = data.items || data; // Handle response with or without "items" key
+            itemsData = data.items || data;
             console.log('Fetched items data:', itemsData);
             if (Array.isArray(itemsData)) {
+                itemsList.innerHTML = ''; // Clear existing items
+
+                // Create and append the header row
+                const headerRow = document.createElement('li');
+                headerRow.innerHTML = `
+                    <div>ID</div>
+                    <div>Name</div>
+                    <div>Category</div>
+                    <div>Quantity</div>
+                `;
+                headerRow.classList.add('header-row'); // Add a class for styling if needed
+                itemsList.appendChild(headerRow);
+
+                // Create and append data rows
                 itemsData.forEach(item => {
-                    itemMap[item.id] = item.name; // Create item ID to name mapping
+                    itemMap[item.id] = item.name;
                     const listItem = document.createElement('li');
                     listItem.innerHTML = `
                         <div>${item.id}</div>
                         <div>${item.name}</div>
-                        <div>${item.category_id}</div>
+                        <div>${window.getCategoryNickname(item.category_id)}</div>
                         <div>${item.quantity}</div>
                     `;
                     itemsList.appendChild(listItem);
@@ -42,6 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
         .catch(error => console.error('Error fetching items:', error));
 
     // Fetch vehicle info and display
+    // Fetch vehicle info and display
     fetch('/api/rescuer/vehicle-info')
         .then(response => response.json())
         .then(data => {
@@ -49,29 +64,27 @@ document.addEventListener('DOMContentLoaded', () => {
                 vehicleData = data.vehicle;
                 const listItem = document.createElement('li');
                 listItem.innerHTML = `
-                    <div>${vehicleData.id}</div>
-                    <div>${vehicleData.name}</div>
-                    <div>${vehicleData.status}</div>
-                    <div>${vehicleData.latitude}</div>
-                    <div>${vehicleData.longitude}</div>
-                    <div>${vehicleData.inventory}</div>
-                    <div>${vehicleData.assigned_task_id}</div>
-                    <div>${vehicleData.assigned_task_type}</div>
-                `;
+                <div>${vehicleData.id}</div>
+                <div>${vehicleData.name}</div>
+                <div>${vehicleData.status}</div>
+                <div>${vehicleData.inventory}</div>
+                <div>${vehicleData.assigned_task_id}</div>
+                <div>${vehicleData.assigned_task_type}</div>
+            `;
 
-                // Parse inventory and replace item IDs with names
+                // Parse inventory and replace item IDs with names, including ID in parentheses
                 const inventory = JSON.parse(vehicleData.inventory || '{}');
                 let inventoryText = '';
                 for (const [itemId, quantity] of Object.entries(inventory)) {
                     if (itemMap[itemId]) {
-                        inventoryText += `${itemMap[itemId]}: ${quantity}, `;
+                        inventoryText += `(${itemId}) ${itemMap[itemId]}: ${quantity}, `;
                     }
                 }
-                listItem.children[5].innerText = inventoryText.slice(0, -2); // Remove the last comma and space
+                listItem.children[3].innerText = inventoryText.slice(0, -2); // Remove the last comma and space
                 vehicleList.appendChild(listItem);
             } else {
                 const listItem = document.createElement('li');
-                listItem.innerHTML = '<div colspan="8">No vehicle assigned</div>';
+                listItem.innerHTML = '<div colspan="6">No vehicle assigned</div>';
                 vehicleList.appendChild(listItem);
             }
         })

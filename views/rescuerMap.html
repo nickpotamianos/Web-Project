@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"/>
     <link rel="stylesheet" href="/css/styles.css"/>
     <link rel="stylesheet" href="/css/map.css"/>
+    <link rel="stylesheet" href="/css/rescuerMap.css">
 </head>
 <body>
 <header>
@@ -15,8 +16,9 @@
     <nav>
         <div class="nav-container">
             <ul>
-                <li><a href="/rescuer_dashboard.html">Dashboard</a></li>
-                <li><a href="/rescuer_dashboard/rescuerMap.html">Map View</a></li>
+                <li><a href="/rescuer_dashboard.html#vehicle-list">Vehicles</a></li>
+                <li><a href="/rescuer_dashboard.html#items-list">Items</a></li>
+                <li><a href="/rescuer_dashboard/rescuerMap.html">Map</a></li>
             </ul>
         </div>
         <button id="logoutButton" class="logout-button">Logout</button>
@@ -71,7 +73,7 @@
             const buttonsDiv = document.createElement('div');
             buttonsDiv.className = 'buttons';
             buttonsDiv.innerHTML = `
-                <button class="completed" onclick="completeTask(${task.id}, '${task.type}')">Completed</button>
+                <button class="completed" onclick="completeTask(${task.id}, '${task.type}')">Complete</button>
                 <button class="cancelled" onclick="cancelTask(${task.id}, '${task.type}')">Cancel</button>
             `;
 

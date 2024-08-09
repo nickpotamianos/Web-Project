@@ -1,0 +1,162 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: #333;
+    color: #fff;
+    padding: 10px 0;
+}
+
+header h1 {
+    margin: 0;
+    text-align: center;
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+}
+
+.nav-container {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+}
+
+nav ul {
+    list-style: none;
+    padding-left: 60px;
+    display: flex;
+    margin: 0;
+    justify-content: center;
+}
+
+nav ul li {
+    margin: 0 5px;
+}
+
+nav ul li a {
+    color: #fff;
+    text-decoration: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+}
+
+nav ul li a:hover {
+    background-color: #615e5e;
+    color: white;
+}
+
+main {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    color: #333;
+    margin-bottom: 15px;
+}
+
+#vehicle-list, #items-list {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    list-style-type: none;
+    padding: 0;
+}
+
+#vehicle-list li, #items-list li {
+    display: flex;
+    border: 1px solid #ddd;
+}
+
+#vehicle-list li:first-child, #items-list li:first-child {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+#vehicle-list li div, #items-list li div {
+    flex: 1;
+    padding: 12px;
+    text-align: left;
+    border-right: 1px solid #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+#vehicle-list li div:last-child, #items-list li div:last-child {
+    border-right: none;
+}
+
+#vehicle-list li:nth-child(even), #items-list li:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+#vehicle-list li:hover, #items-list li:hover {
+    background-color: #f5f5f5;
+}
+
+#load-button, #unload-button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+    color: white;
+}
+
+#load-button {
+    background-color: #2575fc;
+}
+
+#load-button:hover {
+    background-color: #1a5fcc;
+}
+/* Specific widths for vehicle list columns */
+#vehicle-list li div:nth-child(1) { flex: 0 0 5%; }  /* ID */
+#vehicle-list li div:nth-child(2) { flex: 0 0 15%; } /* Name */
+#vehicle-list li div:nth-child(3) { flex: 0 0 10%; } /* Status */
+#vehicle-list li div:nth-child(4) { flex: 1 1 30%; }  /* Inventory */
+#vehicle-list li div:nth-child(5) { flex: 0 0 20%; } /* Assigned Task ID */
+#vehicle-list li div:nth-child(6) { flex: 0 0 20%; } /* Assigned Task Type */
+#unload-button {
+    background-color: #2ecc71;
+    margin-left: 0px;
+}
+
+#unload-button:hover {
+    background-color: #27ae60;
+}
+
+@media (max-width: 768px) {
+    #vehicle-list li, #items-list li {
+        flex-direction: column;
+    }
+
+    #vehicle-list li div, #items-list li div {
+        border-right: none;
+        border-bottom: 1px solid #ddd;
+    }
+
+    #vehicle-list li div:last-child, #items-list li div:last-child {
+        border-bottom: none;
+    }
+
+    /* Reset flex basis for mobile view */
+    #vehicle-list li div {
+        flex-basis: auto !important;
+    }
+}

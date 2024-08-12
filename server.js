@@ -19,6 +19,7 @@ const announcementRoutes = require('./routes/announcements');
 const statsRoutes = require('./routes/stats');
 const rescuerOperations = require('./routes/rescuerOperations'); // Import the new route file
 const rescuerMapRoutes = require('./routes/rescuerMap'); // Import the new rescuer map route file
+const rescuerManagementRoutes = require('./routes/rescuerManagement');
 
 
 const app = express();
@@ -84,6 +85,7 @@ app.use('/api/announcements', announcementRoutes);
 app.use('/api/stats', statsRoutes);
 app.use('/api/rescuer', isAuthenticated, isRescuer, rescuerOperations); // Use the new route with authentication
 app.use('/api/rescuerMap', isAuthenticated, isRescuer, rescuerMapRoutes); // Use the new rescuer map route with authentication
+app.use('/api/rescuers', isAuthenticated, rescuerManagementRoutes);
 
 
 // Serve static files from the "public" directory
@@ -365,22 +367,108 @@ app.post('/signup', (req, res) => {
     });
 });
 app.post('/api/create-rescuer', isAuthenticated, isAdmin, (req, res) => {
-    const { email, password, firstName, lastName, phone } = req.body;
+    const { email, password, firstName, lastName, phone, vehicleAssignment } = req.body;
     const role = 'rescuer';
 
     // Basic validation
-    if (!email || !password || !firstName || !lastName || !phone) {
+    if (!email || !password || !firstName || !lastName || !phone || !vehicleAssignment) {
         return res.status(400).json({ error: 'All fields are required' });
     }
 
-    const sql = 'INSERT INTO users (email, password, first_name, last_name, phone, role) VALUES (?, ?, ?, ?, ?, ?)';
-
-    connection.query(sql, [email, password, firstName, lastName, phone, role], (err, results) => {
+    // Start a transaction
+    connection.beginTransaction((err) => {
         if (err) {
-            console.error('Database error: ', err);
+            console.error('Error starting transaction:', err);
             return res.status(500).json({ error: 'Error creating rescuer account' });
         }
-        res.status(201).json({ message: 'Rescuer account created successfully', userId: results.insertId });
+
+        const userSql = 'INSERT INTO users (email, password, first_name, last_name, phone, role) VALUES (?, ?, ?, ?, ?, ?)';
+
+        connection.query(userSql, [email, password, firstName, lastName, phone, role], (err, userResults) => {
+            if (err) {
+                connection.rollback(() => {
+                    console.error('Database error: ', err);
+                    res.status(500).json({ error: 'Error creating rescuer account' });
+                });
+                return;
+            }
+
+            const userId = userResults.insertId;
+
+            // Handle vehicle assignment
+            if (vehicleAssignment === 'new') {
+                createNewVehicle(userId, firstName, res);
+            } else if (vehicleAssignment !== 'unassigned') {
+                assignVehicleToUser(userId, vehicleAssignment, res);
+            } else {
+                // No vehicle assignment needed
+                commitTransaction(res, userId);
+            }
+        });
+    });
+});
+
+function createNewVehicle(userId, firstName, res) {
+    const baseSql = 'SELECT latitude, longitude FROM bases LIMIT 1';
+    connection.query(baseSql, (err, baseResults) => {
+        if (err) {
+            return connection.rollback(() => {
+                console.error('Error fetching base coordinates:', err);
+                res.status(500).json({ error: 'Error creating new vehicle' });
+            });
+        }
+
+        const { latitude, longitude } = baseResults[0];
+        const vehicleSql = 'INSERT INTO vehicles (name, status, latitude, longitude, user_id) VALUES (?, ?, ?, ?, ?)';
+        const vehicleName = `${firstName}'s Vehicle`;
+        connection.query(vehicleSql, [vehicleName, 'active', latitude, longitude, userId], (err, vehicleResults) => {
+            if (err) {
+                return connection.rollback(() => {
+                    console.error('Error creating new vehicle:', err);
+                    res.status(500).json({ error: 'Error creating new vehicle' });
+                });
+            }
+            commitTransaction(res, userId);
+        });
+    });
+}
+
+function assignVehicleToUser(userId, vehicleId, res) {
+    const assignSql = 'UPDATE vehicles SET user_id = ? WHERE id = ?';
+    connection.query(assignSql, [userId, vehicleId], (err) => {
+        if (err) {
+            connection.rollback(() => {
+                console.error('Error assigning vehicle to user:', err);
+                res.status(500).json({ error: 'Error assigning vehicle to user' });
+            });
+            return;
+        }
+        commitTransaction(res, userId);
+    });
+}
+
+function commitTransaction(res, userId) {
+    connection.commit((err) => {
+        if (err) {
+            connection.rollback(() => {
+                console.error('Error committing transaction:', err);
+                res.status(500).json({ error: 'Error creating rescuer account' });
+            });
+            return;
+        }
+        res.status(201).json({ message: 'Rescuer account created successfully', userId: userId });
+    });
+}
+
+// New endpoint to get available vehicles
+app.get('/api/vehicles', isAuthenticated, isAdmin, (req, res) => {
+    const sql = 'SELECT id, name FROM vehicles WHERE user_id IS NULL';
+    connection.query(sql, (err, results) => {
+        if (err) {
+            console.error('Error fetching vehicles:', err);
+            return res.status(500).json({ error: 'Error fetching vehicles' });
+        }
+        res.status(200).json(results);
     });
 });
 

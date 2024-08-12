@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let itemsData;
     let itemMap = {};
     let baseCoordinates;
-
+    
     // Fetch base coordinates
     fetch('/api/rescuer/base-coordinates')
         .then(response => response.json())

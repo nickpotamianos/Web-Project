@@ -39,7 +39,14 @@ document.addEventListener("DOMContentLoaded", function() {
             console.warn(`Layer ${layer} does not exist`);
             return null;
         }
-        const marker = L.marker([item.latitude, item.longitude], { icon: icon }).addTo(layers[layer]);
+        const markerOptions = { icon: icon };
+
+        // Set a high zIndex for base markers
+        if (item.type === 'base') {
+            markerOptions.zIndexOffset = 1000; // This ensures base markers are on top
+        }
+
+        const marker = L.marker([item.latitude, item.longitude], markerOptions).addTo(layers[layer]);
         marker.bindPopup(createPopupContent(item));
         return marker;
     }

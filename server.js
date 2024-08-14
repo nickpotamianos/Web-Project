@@ -11,7 +11,6 @@ const fileUpload = require('express-fileupload');
 const userRoutes = require('./routes/users');
 const itemRoutes = require('./routes/items');
 const categoryRoutes = require('./routes/categories');
-const warehouseRoutes = require('./routes/warehouse');
 const mapdataRoutes = require('./routes/mapdata');
 const taskAssignmentRoutes = require('./routes/taskAssignment');
 const warehouseStatusRoutes = require('./routes/warehouse_status');

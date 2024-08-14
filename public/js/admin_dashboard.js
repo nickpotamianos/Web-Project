@@ -10,9 +10,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let editDetailsFields;
 
     const categoryNicknames = {
-        10: '',
-        13: '-----',
-        9: '2d hacker',
         49: 'Animal Care',
         29: 'Animal Food',
         25: 'Baby Essentials',
@@ -48,10 +45,6 @@ document.addEventListener('DOMContentLoaded', () => {
         19: 'Shoes',
         51: 'Sleep Essentilals',
         56: 'Special items',
-        11: 'Test',
-        61: 'test category',
-        40: 'test1',
-        39: 'Test_0',
         23: 'Tools',
         54: 'Tools and Equipment',
         48: 'Water Purification',
@@ -225,9 +218,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function openUpdateDetailsPopup(event) {
         const itemId = event.target.getAttribute('data-id');
-        fetch(`/api/items/${itemId}`)
+        fetch('/api/items')
             .then(response => response.json())
-            .then(item => {
+            .then(items => {
+                const item = items.find(i => i.id == itemId);
+                if (!item) {
+                    throw new Error('Item not found');
+                }
                 const popup = document.createElement('div');
                 popup.className = 'popup';
                 popup.style.display = 'block';
@@ -239,43 +236,69 @@ document.addEventListener('DOMContentLoaded', () => {
                 popup.style.backgroundColor = 'rgba(0,0,0,0.5)';
                 popup.style.zIndex = '1000';
                 popup.innerHTML = `
-                    <div class="popup-content" style="background-color: white; padding: 20px; margin: 50px auto; width: 50%; max-width: 500px;">
-                        <h3>Edit Item Details</h3>
-                        <form id="editDetailsForm" data-item-id="${itemId}">
-                            <div id="editDetailsFields"></div>
-                            <button type="submit" id="submitUpdate" style="background-color: green;">Update Details</button>
-                            <button type="button" id="closePopup">Cancel</button>
-                        </form>
-                    </div>
-                `;
+                <div class="popup-content" style="background-color: white; padding: 20px; margin: 50px auto; width: 50%; max-width: 500px;">
+                    <h3>Edit Item Details</h3>
+                    <form id="editDetailsForm" data-item-id="${itemId}">
+                        <div id="editDetailsFields"></div>
+                        <button type="button" id="addDetailButton">Add Detail</button>
+                        <button type="submit" id="submitUpdate" style="background-color: green;">Update Details</button>
+                        <button type="button" id="closePopup">Cancel</button>
+                    </form>
+                </div>
+            `;
                 document.body.appendChild(popup);
 
-                editDetailsFields = popup.querySelector('#editDetailsFields');
+                const editDetailsFields = popup.querySelector('#editDetailsFields');
                 const editDetailsForm = popup.querySelector('#editDetailsForm');
                 const closePopup = popup.querySelector('#closePopup');
+                const addDetailButton = popup.querySelector('#addDetailButton');
+
+                function createDetailInput(detail, index) {
+                    const detailContainer = document.createElement('div');
+                    detailContainer.style.display = 'flex';
+                    detailContainer.style.marginBottom = '10px';
+
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.name = `detail_${index}`;
+                    input.value = detail ? `${detail.detail_name}: ${detail.detail_value}` : 'New Detail: Value';
+                    input.style.flexGrow = '1';
+
+                    const deleteButton = document.createElement('button');
+                    deleteButton.type = 'button';
+                    deleteButton.textContent = 'Delete';
+                    deleteButton.style.marginLeft = '5px';
+                    deleteButton.addEventListener('click', () => {
+                        editDetailsFields.removeChild(detailContainer);
+                    });
+
+                    detailContainer.appendChild(input);
+                    detailContainer.appendChild(deleteButton);
+                    return detailContainer;
+                }
 
                 if (item.details && item.details.length > 0) {
                     item.details.forEach((detail, index) => {
-                        const input = document.createElement('input');
-                        input.type = 'text';
-                        input.name = `detail_${index}`;
-                        input.value = `${detail.detail_name}: ${detail.detail_value}`;
-                        editDetailsFields.appendChild(input);
+                        editDetailsFields.appendChild(createDetailInput(detail, index));
                     });
                 } else {
-                    const input = document.createElement('input');
-                    input.type = 'text';
-                    input.name = 'detail_0';
-                    input.value = 'New Detail: Value';
-                    editDetailsFields.appendChild(input);
+                    editDetailsFields.appendChild(createDetailInput(null, 0));
                 }
+
+                addDetailButton.addEventListener('click', () => {
+                    const newIndex = editDetailsFields.children.length;
+                    editDetailsFields.appendChild(createDetailInput(null, newIndex));
+                });
 
                 editDetailsForm.addEventListener('submit', updateItemDetails);
                 closePopup.addEventListener('click', () => {
                     document.body.removeChild(popup);
                 });
             })
-            .catch(error => console.error('Error fetching item details:', error));
+            .catch(error => {
+                console.error('Error fetching item details:', error);
+                alert('Failed to load item details. Please try again.');
+            });
     }
 
     function updateItemQuantity(event) {

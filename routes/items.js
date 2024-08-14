@@ -255,29 +255,24 @@ router.delete('/:id', (req, res) => {
                             });
                         }
 
+                        // Finally, delete the item
+                        const deleteItemSql = 'DELETE FROM items WHERE id = ?';
+                        connection.query(deleteItemSql, [id], (err) => {
+                            if (err) {
+                                return connection.rollback(() => {
+                                    console.error('Error deleting item:', err);
+                                    res.status(500).json({ error: 'Error deleting item' });
+                                });
+                            }
 
-                        connection.query(deleteWarehouseSql, [id], (err) => {
-
-
-                            // Finally, delete the item
-                            const deleteItemSql = 'DELETE FROM items WHERE id = ?';
-                            connection.query(deleteItemSql, [id], (err) => {
+                            connection.commit((err) => {
                                 if (err) {
                                     return connection.rollback(() => {
-                                        console.error('Error deleting item:', err);
-                                        res.status(500).json({ error: 'Error deleting item' });
+                                        console.error('Error committing transaction:', err);
+                                        res.status(500).json({ error: 'Error committing transaction' });
                                     });
                                 }
-
-                                connection.commit((err) => {
-                                    if (err) {
-                                        return connection.rollback(() => {
-                                            console.error('Error committing transaction:', err);
-                                            res.status(500).json({ error: 'Error committing transaction' });
-                                        });
-                                    }
-                                    res.status(200).json({ message: 'Item deleted successfully' });
-                                });
+                                res.status(200).json({ message: 'Item deleted successfully' });
                             });
                         });
                     });

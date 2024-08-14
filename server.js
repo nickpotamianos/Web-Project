@@ -74,7 +74,6 @@ function isRescuer(req, res, next) {
 app.use('/api/items', itemRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/users', userRoutes);
-app.use('/api/warehouse', warehouseRoutes);
 app.use('/api/mapdata', mapdataRoutes);
 app.use('/api/bases', mapdataRoutes); // Ensure that /api/bases route is correctly used
 app.use('/api/task-assignment', taskAssignmentRoutes);

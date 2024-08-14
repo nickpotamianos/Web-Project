@@ -43,12 +43,12 @@ document.addEventListener('DOMContentLoaded', () => {
         21: 'Personal Hygiene ',
         41: 'pet supplies',
         19: 'Shoes',
-        51: 'Sleep Essentilals',
+        51: 'Sleep Essentials',
         56: 'Special items',
         23: 'Tools',
         54: 'Tools and Equipment',
         48: 'Water Purification',
-        42: 'Μedicines'
+        42: 'Medicines'
     };
 
     window.getCategoryNickname = function(categoryId) {

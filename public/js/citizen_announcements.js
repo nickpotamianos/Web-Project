@@ -142,6 +142,27 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .catch(error => console.error('Error submitting offer:', error));
     });
+    // Logout functionality
+    if (logoutButton) {
+        logoutButton.addEventListener('click', function() {
+            fetch('/api/logout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.href = '/login.html';
+                    } else {
+                        alert('Logout failed');
+                    }
+                })
+                .catch(error => console.error('Error logging out:', error));
+        });
+    } else {
+        console.error('Logout button not found');
+    }
 });
 // Define the closeOfferModal function
 function closeOfferModal() {

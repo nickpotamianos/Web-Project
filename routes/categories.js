@@ -31,7 +31,19 @@ router.post('/', (req, res) => {
         res.status(201).json({ message: 'Category added successfully', categoryId: results.insertId });
     });
 });
+// Fetch items by category ID
+router.get('/:categoryId/items', (req, res) => {
+    const { categoryId } = req.params;
 
+    const sql = 'SELECT id, name FROM items WHERE category_id = ?';
+    connection.query(sql, [categoryId], (err, results) => {
+        if (err) {
+            console.error('Database error:', err);
+            return res.status(500).json({ error: 'Error fetching items' });
+        }
+        res.status(200).json(results);
+    });
+});
 // Update a category
 router.put('/:id', (req, res) => {
     const { id } = req.params;

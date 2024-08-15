@@ -6,7 +6,8 @@
     <link rel="icon" type="image/png" href="/images/logo.png">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="/css/login_signup.css">
     <link href="/css/styles.css" rel="stylesheet">
     <link href="/css/signup.css" rel="stylesheet">
 </head>
@@ -35,7 +36,10 @@
             <h2 class="fs-title">Login to your account</h2>
             <h3 class="fs-subtitle">Please fill below</h3>
             <input type="text" name="email" placeholder="Email" />
-            <input type="password" name="pass" placeholder="Password" />
+            <div class="password-container">
+                <input type="password" name="pass" placeholder="Password" />
+                <i class="fa fa-eye-slash password-toggle" aria-hidden="true"></i>
+            </div>
             <input type="button" name="Log In" class="next action-button" value="Login" />
         </fieldset>
     </form>

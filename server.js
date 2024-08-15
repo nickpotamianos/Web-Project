@@ -19,6 +19,8 @@ const statsRoutes = require('./routes/stats');
 const rescuerOperations = require('./routes/rescuerOperations'); // Import the new route file
 const rescuerMapRoutes = require('./routes/rescuerMap'); // Import the new rescuer map route file
 const rescuerManagementRoutes = require('./routes/rescuerManagement');
+const citizenOperations = require('./routes/citizen_operations');
+const citizenOffersRoutes = require('./routes/citizen_offers');
 
 
 const app = express();
@@ -84,6 +86,10 @@ app.use('/api/stats', statsRoutes);
 app.use('/api/rescuer', isAuthenticated, isRescuer, rescuerOperations); // Use the new route with authentication
 app.use('/api/rescuerMap', isAuthenticated, isRescuer, rescuerMapRoutes); // Use the new rescuer map route with authentication
 app.use('/api/rescuers', isAuthenticated, rescuerManagementRoutes);
+app.use('/api/citizen_operations', isAuthenticated, citizenOperations);
+app.use('/api/citizen_offers', isAuthenticated, citizenOffersRoutes);
+
+
 
 
 // Serve static files from the "public" directory
@@ -157,6 +163,13 @@ app.get('/admin_dashboard/announcement_creation.html', isAuthenticated, isAdmin,
 });
 app.get('/admin_dashboard/stats.html', isAuthenticated, isAdmin, (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'stats.html'));
+});
+// Serve protected HTML file for citizen dashboard
+app.get('/citizen_dashboard.html', isAuthenticated, (req, res) => {
+    res.sendFile(path.join(__dirname, 'views', 'citizen_dashboard.html'));
+});
+app.get('/citizen_dashboard/citizen_announcements.html', isAuthenticated, (req, res) => {
+    res.sendFile(path.join(__dirname, 'views', 'citizen_announcements.html'));
 });
 // Handle user login
 app.post('/login', (req, res) => {
@@ -340,28 +353,26 @@ async function populateDatabase(data) {
 
 // Route for handling POST requests to '/signup'
 app.post('/signup', (req, res) => {
-    console.log('Received request body:', req.body); // Log request body for debugging
+    console.log('Received request body:', req.body);
 
-    const { email, pass, fname, lname, phone } = req.body;
-    const role = 'citizen'; // Default role
+    const { email, pass, fname, lname, phone, address, latitude, longitude } = req.body;
+    const role = 'citizen';
 
-    // Basic validation
-    if (!email || !pass || !fname || !lname || !phone) {
+    if (!email || !pass || !fname || !lname || !phone || !address || !latitude || !longitude) {
         console.error('Validation error: Missing required fields');
         return res.status(400).json({ error: 'Validation error: Missing required fields' });
     }
 
-    // Use a prepared statement to avoid SQL injection
-    const sql = 'INSERT INTO users (email, password, first_name, last_name, phone, role) VALUES (?, ?, ?, ?, ?, ?)';
+    const sql = 'INSERT INTO users (email, password, first_name, last_name, phone, role, address, latitude, longitude) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
 
-    connection.query(sql, [email, pass, fname, lname, phone, role], (err, results) => {
+    connection.query(sql, [email, pass, fname, lname, phone, role, address, latitude, longitude], (err, results) => {
         if (err) {
             console.error('Database error: ', err);
             res.status(500).json({ error: 'Error registering new user', details: err.message });
             return;
         }
         console.log('User registered successfully');
-        res.status(200).json({ message: 'User registered successfully' }); // Send JSON response
+        res.status(200).json({ message: 'User registered successfully' });
     });
 });
 app.post('/api/create-rescuer', isAuthenticated, isAdmin, (req, res) => {
@@ -469,7 +480,19 @@ app.get('/api/vehicles', isAuthenticated, isAdmin, (req, res) => {
         res.status(200).json(results);
     });
 });
+app.get('/check-email', (req, res) => {
+    const { email } = req.query;
 
+    // Use your database connection to check if the email exists
+    const sql = 'SELECT * FROM users WHERE email = ?';
+    connection.query(sql, [email], (err, results) => {
+        if (err) {
+            console.error('Database error: ', err);
+            return res.status(500).json({ error: 'Error checking email' });
+        }
+        res.json({ exists: results.length > 0 });
+    });
+});
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {

@@ -44,4 +44,15 @@ $(document).ready(function() {
             }
         });
     });
+    // Password visibility toggle
+    $(".password-toggle").click(function() {
+        var input = $(this).prev('input');
+        if (input.attr('type') === 'password') {
+            input.attr('type', 'text');
+            $(this).removeClass('fa-eye-slash').addClass('fa-eye');
+        } else {
+            input.attr('type', 'password');
+            $(this).removeClass('fa-eye').addClass('fa-eye-slash');
+        }
+    });
 });

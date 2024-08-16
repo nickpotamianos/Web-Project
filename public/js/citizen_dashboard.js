@@ -7,58 +7,110 @@ document.addEventListener('DOMContentLoaded', function() {
     const requestOfferMessage = document.getElementById('requestOfferMessage');
     const logoutButton = document.getElementById('logoutButton');
     const tasksTableBody = document.getElementById('tasksTableBody');
-    let formSubmitting = false; // Flag to prevent double submission
+    const locationSelect = document.getElementById('locationSelect');
+    const newAddressField = document.getElementById('newAddressField');
+    let formSubmitting = false;
+    let userRegisteredLatitude, userRegisteredLongitude;
+    let userLocationFetched = false;
+
+    // Initialize Leaflet geocoder
+    const geocoder = L.Control.Geocoder.nominatim({
+        geocodingQueryParams: {
+            countrycodes: 'gr',
+            viewbox: '19.3736,34.8021,28.2336,41.7488',
+            bounded: 1
+        }
+    });
+
+    // Fetch user's registered location
+    fetch('/api/user/location')
+        .then(response => response.json())
+        .then(data => {
+            userRegisteredLatitude = data.latitude;
+            userRegisteredLongitude = data.longitude;
+            userLocationFetched = true;
+            console.log('User location fetched:', data);
+        })
+        .catch(error => {
+            console.error('Error fetching user location:', error);
+            userLocationFetched = true; // Set to true even on error to allow form submission
+        });
 
     // Fetch categories and populate the dropdown
     fetch('/api/categories')
         .then(response => response.json())
         .then(categories => {
+            categorySelect.innerHTML = '<option value="">-- Select a Category --</option>';
             categories.forEach(category => {
                 const option = document.createElement('option');
                 option.value = category.id;
-                option.textContent = getCategoryNickname(category.id); // Use the global function to get category name
+                option.textContent = window.getCategoryNickname(category.id);
                 categorySelect.appendChild(option);
             });
         })
         .catch(error => console.error('Error fetching categories:', error));
 
-    // Fetch items based on selected category
+    // Modify the category change event listener
     categorySelect.addEventListener('change', function() {
         const categoryId = this.value;
         if (categoryId) {
             fetch(`/api/categories/${categoryId}/items`)
                 .then(response => response.json())
                 .then(items => {
-                    itemSelect.innerHTML = '<option value="">-- Select an Item --</option>'; // Clear previous items
+                    itemSelect.innerHTML = '<option value="">-- Select an Item --</option>';
                     items.forEach(item => {
                         const option = document.createElement('option');
                         option.value = item.id;
                         option.textContent = item.name;
                         itemSelect.appendChild(option);
                     });
+                    // If there's a currently selected item, try to keep it selected
+                    const currentItemId = itemSelect.value;
+                    if (currentItemId) {
+                        const matchingOption = itemSelect.querySelector(`option[value="${currentItemId}"]`);
+                        if (matchingOption) {
+                            matchingOption.selected = true;
+                        }
+                    }
                 })
                 .catch(error => console.error('Error fetching items:', error));
         } else {
-            itemSelect.innerHTML = '<option value="">-- Select an Item --</option>'; // Clear items if no category selected
+            itemSelect.innerHTML = '<option value="">-- Select an Item --</option>';
+        }
+    });
+
+    // Toggle address field visibility based on location option
+    locationSelect.addEventListener('change', function() {
+        if (this.value === 'new') {
+            newAddressField.style.display = 'block';
+        } else {
+            newAddressField.style.display = 'none';
         }
     });
 
     // Autocomplete search with suggestion
+    // Autocomplete search with suggestion
     itemSearch.addEventListener('input', function() {
         const searchQuery = this.value.toLowerCase();
-        if (searchQuery.length > 2) {  // Start search after at least 3 characters
+        if (searchQuery.length > 2) {
             fetch(`/api/items?search=${searchQuery}`)
                 .then(response => response.json())
                 .then(items => {
-                    autocompleteList.innerHTML = ''; // Clear previous suggestions
+                    autocompleteList.innerHTML = '';
                     items.forEach(item => {
-                        if (item.name.toLowerCase().includes(searchQuery)) {  // Check if item matches the query
+                        if (item.name.toLowerCase().includes(searchQuery)) {
                             const listItem = document.createElement('li');
                             listItem.textContent = item.name;
                             listItem.addEventListener('click', function() {
                                 itemSearch.value = item.name;
-                                itemSelect.innerHTML = `<option value="${item.id}">${item.name}</option>`;
-                                autocompleteList.innerHTML = ''; // Clear suggestions after selection
+
+                                // Update category dropdown without triggering change event
+                                updateCategoryDropdown(item.category_id, false);
+
+                                // Update item dropdown
+                                updateItemDropdown(item.id, item.name);
+
+                                autocompleteList.innerHTML = '';
                             });
                             autocompleteList.appendChild(listItem);
                         }
@@ -66,51 +118,101 @@ document.addEventListener('DOMContentLoaded', function() {
                 })
                 .catch(error => console.error('Error fetching items:', error));
         } else {
-            autocompleteList.innerHTML = ''; // Clear suggestions if query is too short
+            autocompleteList.innerHTML = '';
         }
     });
 
-    // Prevent default form submission and handle it via JavaScript
-    requestOfferForm.addEventListener('submit', function(e) {
-        e.preventDefault(); // Prevent the default form submission
+    // Function to update category dropdown
+    // Function to update category dropdown
+    function updateCategoryDropdown(categoryId, triggerChange = true) {
+        const options = categorySelect.options;
+        for (let i = 0; i < options.length; i++) {
+            if (options[i].value == categoryId) {
+                categorySelect.selectedIndex = i;
+                if (triggerChange) {
+                    // Trigger change event on categorySelect
+                    const event = new Event('change');
+                    categorySelect.dispatchEvent(event);
+                }
+                break;
+            }
+        }
+    }
 
-        if (formSubmitting) return; // Prevent multiple submissions
-        formSubmitting = true; // Set flag to true after first submission
+// Function to update item dropdown
+    function updateItemDropdown(itemId, itemName) {
+        itemSelect.innerHTML = `<option value="${itemId}">${itemName}</option>`;
+        itemSelect.value = itemId;
+    }
+
+    // Handle form submission
+    requestOfferForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        if (formSubmitting) return;
+        formSubmitting = true;
 
         const itemId = itemSelect.value;
         const quantity = document.getElementById('itemQuantity').value.trim();
-        const latitude = document.getElementById('latitude').value.trim();
-        const longitude = document.getElementById('longitude').value.trim();
+        const locationOption = locationSelect.value;
+        const newAddress = document.getElementById('newAddress').value.trim();
 
-        // Validate form inputs
-        if (!itemId || !quantity || !latitude || !longitude) {
-            requestOfferMessage.textContent = 'Please fill all fields including item, quantity, latitude, and longitude.';
+        if (!itemId || !quantity || (locationOption === 'new' && !newAddress)) {
+            requestOfferMessage.textContent = 'Please fill all required fields.';
             requestOfferMessage.style.color = 'red';
-            formSubmitting = false; // Reset flag on error
+            formSubmitting = false;
             return;
         }
 
-        // Check if quantity is an integer
         if (!Number.isInteger(Number(quantity))) {
             requestOfferMessage.textContent = 'Please enter a valid integer for the number of people.';
             requestOfferMessage.style.color = 'red';
-            formSubmitting = false; // Reset flag on error
-            return;
-        }
-
-        // Check if latitude and longitude are valid decimal numbers
-        const decimalPattern = /^[+-]?(\d*\.\d+|\d+\.?\d*)$/;
-        if (!decimalPattern.test(latitude) || !decimalPattern.test(longitude)) {
-            requestOfferMessage.textContent = 'Please enter valid decimal numbers for latitude and longitude.';
-            requestOfferMessage.style.color = 'red';
-            formSubmitting = false; // Reset flag on error
+            formSubmitting = false;
             return;
         }
 
         const submitButton = requestOfferForm.querySelector('button[type="submit"]');
-        submitButton.disabled = true; // Disable the submit button to prevent double-clicks
+        submitButton.disabled = true;
 
+        if (locationOption === 'registered') {
+            // Check if user location has been fetched
+            if (!userLocationFetched) {
+                requestOfferMessage.textContent = 'User location is still being fetched. Please try again in a moment.';
+                requestOfferMessage.style.color = 'red';
+                formSubmitting = false;
+                submitButton.disabled = false;
+                return;
+            }
+            // Use registered address
+            if (userRegisteredLatitude && userRegisteredLongitude) {
+                submitRequest(itemId, quantity, userRegisteredLatitude, userRegisteredLongitude);
+            } else {
+                requestOfferMessage.textContent = 'Could not retrieve your registered location. Please try using a new address.';
+                requestOfferMessage.style.color = 'red';
+                formSubmitting = false;
+                submitButton.disabled = false;
+            }
+        } else {
+            // Geocode the new address
+            geocoder.geocode(newAddress, function(results) {
+                if (results.length > 0) {
+                    const latitude = results[0].center.lat;
+                    const longitude = results[0].center.lng;
+                    submitRequest(itemId, quantity, latitude, longitude);
+                } else {
+                    requestOfferMessage.textContent = 'Could not find coordinates for the given address.';
+                    requestOfferMessage.style.color = 'red';
+                    formSubmitting = false;
+                    submitButton.disabled = false;
+                }
+            });
+        }
+    });
+
+    function submitRequest(itemId, quantity, latitude, longitude) {
         const apiUrl = `/api/citizen_operations/RequestTask`;
+
+        console.log('Submitting request with data:', { itemId, quantity, latitude, longitude });
 
         fetch(apiUrl, {
             method: 'POST',
@@ -127,28 +229,54 @@ document.addEventListener('DOMContentLoaded', function() {
                 } else {
                     requestOfferMessage.textContent = `Request created successfully!`;
                     requestOfferMessage.style.color = 'green';
-                    requestOfferForm.reset(); // Reset form fields
-                    fetchUserTasks(); // Refresh tasks after submission
+
+                    // Reset form and dropdowns
+                    requestOfferForm.reset();
+                    resetDropdowns();
+
+                    fetchUserTasks();
                 }
-                formSubmitting = false; // Reset flag after successful submission
-                submitButton.disabled = false; // Re-enable the button
+                formSubmitting = false;
+                requestOfferForm.querySelector('button[type="submit"]').disabled = false;
             })
             .catch(error => {
                 console.error('Error:', error);
                 requestOfferMessage.textContent = `An error occurred while creating the request.`;
                 requestOfferMessage.style.color = 'red';
-                formSubmitting = false; // Reset flag on error
-                submitButton.disabled = false; // Re-enable the button
+                formSubmitting = false;
+                requestOfferForm.querySelector('button[type="submit"]').disabled = false;
             });
-    });
+    }
 
-    // Fetch and display the user's tasks
+    function resetDropdowns() {
+        // Reset category dropdown
+        categorySelect.innerHTML = '<option value="">-- Select a Category --</option>';
+        fetch('/api/categories')
+            .then(response => response.json())
+            .then(categories => {
+                categories.forEach(category => {
+                    const option = document.createElement('option');
+                    option.value = category.id;
+                    option.textContent = window.getCategoryNickname(category.id);
+                    categorySelect.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error fetching categories:', error));
+
+        // Reset item dropdown
+        itemSelect.innerHTML = '<option value="">-- Select an Item --</option>';
+
+        // Clear the item search input and autocomplete list
+        itemSearch.value = '';
+        autocompleteList.innerHTML = '';
+    }
+
+    // Fetch and display user's tasks
     function fetchUserTasks() {
         fetch('/api/citizen_operations/citizen_tasks')
             .then(response => response.json())
             .then(tasks => {
-                tasksTableBody.innerHTML = ''; // Clear existing rows
-
+                tasksTableBody.innerHTML = '';
                 tasks.forEach(task => {
                     const row = document.createElement('tr');
                     row.innerHTML = `
@@ -167,10 +295,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function formatDate(dateString) {
         const date = new Date(dateString);
-        return date.toLocaleString(); // Formats the date to the user's locale
+        return date.toLocaleString();
     }
 
-    fetchUserTasks(); // Initial call to load tasks
+    fetchUserTasks();
 
     // Logout functionality
     if (logoutButton) {

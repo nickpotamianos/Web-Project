@@ -21,6 +21,7 @@ const rescuerMapRoutes = require('./routes/rescuerMap'); // Import the new rescu
 const rescuerManagementRoutes = require('./routes/rescuerManagement');
 const citizenOperations = require('./routes/citizen_operations');
 const citizenOffersRoutes = require('./routes/citizen_offers');
+const citizenRoutes = require('./routes/citizenRoutes');
 
 
 const app = express();
@@ -88,7 +89,7 @@ app.use('/api/rescuerMap', isAuthenticated, isRescuer, rescuerMapRoutes); // Use
 app.use('/api/rescuers', isAuthenticated, rescuerManagementRoutes);
 app.use('/api/citizen_operations', isAuthenticated, citizenOperations);
 app.use('/api/citizen_offers', isAuthenticated, citizenOffersRoutes);
-
+app.use('/api/citizen', citizenRoutes);
 
 
 
@@ -170,6 +171,9 @@ app.get('/citizen_dashboard.html', isAuthenticated, (req, res) => {
 });
 app.get('/citizen_dashboard/citizen_announcements.html', isAuthenticated, (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'citizen_announcements.html'));
+});
+app.get('/citizen_dashboard/citizen_settings.html', isAuthenticated, (req, res) => {
+    res.sendFile(path.join(__dirname, 'views', 'citizen_settings.html'));
 });
 // Handle user login
 app.post('/login', (req, res) => {
@@ -493,6 +497,31 @@ app.get('/check-email', (req, res) => {
         res.json({ exists: results.length > 0 });
     });
 });
+app.get('/api/user/location', (req, res) => {
+    if (!req.session.user) {
+        console.error('User not logged in');
+        return res.status(401).json({ error: 'User not logged in' });
+    }
+
+    const userId = req.session.user.id;
+    console.log('Fetching location for user ID:', userId);
+
+    const sql = 'SELECT latitude, longitude FROM users WHERE id = ?';
+    connection.query(sql, [userId], (err, results) => {
+        if (err) {
+            console.error('Database error fetching user location:', err);
+            return res.status(500).json({ error: 'Error fetching user location', details: err.message });
+        }
+        if (results.length > 0) {
+            console.log('User location found:', results[0]);
+            res.json(results[0]);
+        } else {
+            console.error('User location not found for user ID:', userId);
+            res.status(404).json({ error: 'User location not found' });
+        }
+    });
+});
+
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {

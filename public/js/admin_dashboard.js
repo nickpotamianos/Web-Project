@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
         16: 'Medical Supplies',
         52: 'Navigation Tools',
         15: 'new cat',
-        21: 'Personal Hygiene ',
+        21: 'Personal Hygiene',
         41: 'pet supplies',
         19: 'Shoes',
         51: 'Sleep Essentials',
@@ -45,7 +45,23 @@ document.addEventListener('DOMContentLoaded', () => {
         23: 'Tools',
         54: 'Tools and Equipment',
         48: 'Water Purification',
-        42: 'Medicines'
+        42: 'Medicines',
+        10: '', // Blank category name
+        13: '-----', // Placeholder category
+        9: '2d hacker',
+        66: 'Animal Flood',
+        70: 'Car Supplies',
+        68: 'Mental Health Support',
+        65: 'ood', // Potential typo?
+        72: 'Ready-To-Eat Meals',
+        69: 'Sanitary Products',
+        67: 'Solar-Powered Devices',
+        11: 'Test',
+        61: 'test category',
+        40: 'test1',
+        39: 'Test_0',
+        71: 'Thermal Clothing',
+        73: 'Toys'
     };
 
     window.getCategoryNickname = function(categoryId) {

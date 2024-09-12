@@ -4,10 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const categoryForm = document.getElementById('categoryForm');
     const categoryList = document.getElementById('categoryList');
     const logoutButton = document.getElementById('logoutButton');
-    const warehouseList = document.getElementById('warehouseList');
-    const editDetailsPopup = document.getElementById('editDetailsPopup');
-    const editDetailsForm = document.getElementById('editDetailsForm');
-    let editDetailsFields;
+
 
     const categoryNicknames = {
         49: 'Animal Care',

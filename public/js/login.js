@@ -2,7 +2,9 @@ $(document).ready(function() {
     $(".next").click(function(e) {
         e.preventDefault(); // Prevent the default form submission
         console.log("Login button clicked"); // Debug log
-
+        var loginUrl = (window.location.hostname === "localhost") ?
+            "http://localhost:3000/login" :
+            "http://web.potamianosgroup.com:3000/login";
         // Collect the form data
         var data = {
             email: $("input[name='email']").val(),
@@ -15,7 +17,7 @@ $(document).ready(function() {
         // Send the form data using AJAX
         $.ajax({
             type: "POST",
-            url: "http://localhost:3000/login", // Ensure this matches your server route and port
+            url: loginUrl, // Ensure this matches your server route and port
             data: JSON.stringify(data),
             contentType: "application/json",
             success: function(response) {

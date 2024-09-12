@@ -8,9 +8,54 @@ document.addEventListener('DOMContentLoaded', () => {
     let itemsData;
     let itemMap = {};
     let baseCoordinates;
-    
+
+
+
+    // Function to display vehicle info
+    function displayVehicleInfo() {
+        vehicleList.innerHTML = ''; // Clear existing content
+
+        const headerRow = document.createElement('li');
+        headerRow.innerHTML = `
+        <div>ID</div>
+        <div>Name</div>
+        <div>Status</div>
+        <div>(Item ID) Inventory</div>
+        <div>Assigned Task ID</div>
+        <div>Assigned Task Type</div>
+    `;
+        headerRow.classList.add('header-row');
+        vehicleList.appendChild(headerRow);
+        if (vehicleData) {
+            const listItem = document.createElement('li');
+            listItem.innerHTML = `
+                <div>${vehicleData.id}</div>
+                <div>${vehicleData.name}</div>
+                <div>${vehicleData.status}</div>
+                <div></div>
+                <div>${vehicleData.assigned_task_id}</div>
+                <div>${vehicleData.assigned_task_type}</div>
+            `;
+
+            // Parse inventory and replace item IDs with names, including ID in parentheses
+            const inventory = JSON.parse(vehicleData.inventory || '{}');
+            let inventoryText = '';
+            for (const [itemId, quantity] of Object.entries(inventory)) {
+                if (itemMap[itemId]) {
+                    inventoryText += `(${itemId}) ${itemMap[itemId]}: ${quantity}, `;
+                }
+            }
+            listItem.children[3].innerText = inventoryText.slice(0, -2); // Remove the last comma and space
+            vehicleList.appendChild(listItem);
+        } else {
+            const listItem = document.createElement('li');
+            listItem.innerHTML = '<div colspan="6">No vehicle assigned</div>';
+            vehicleList.appendChild(listItem);
+        }
+    }
+
     // Fetch base coordinates
-    fetch('/api/rescuer/base-coordinates')
+    const baseCoordPromise = fetch('/api/rescuer/base-coordinates')
         .then(response => response.json())
         .then(data => {
             baseCoordinates = data;
@@ -18,11 +63,10 @@ document.addEventListener('DOMContentLoaded', () => {
         .catch(error => console.error('Error fetching base coordinates:', error));
 
     // Fetch items and build the itemMap
-    fetch('/api/rescuer/items')
+    const itemsPromise = fetch('/api/rescuer/items')
         .then(response => response.json())
         .then(data => {
             itemsData = data.items || data;
-            console.log('Fetched items data:', itemsData);
             if (Array.isArray(itemsData)) {
                 itemsList.innerHTML = ''; // Clear existing items
 
@@ -34,7 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div>Category</div>
                     <div>Quantity</div>
                 `;
-                headerRow.classList.add('header-row'); // Add a class for styling if needed
+                headerRow.classList.add('header-row');
                 itemsList.appendChild(headerRow);
 
                 // Create and append data rows
@@ -55,40 +99,22 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .catch(error => console.error('Error fetching items:', error));
 
-    // Fetch vehicle info and display
-    // Fetch vehicle info and display
-    fetch('/api/rescuer/vehicle-info')
+    // Fetch vehicle info
+    const vehiclePromise = fetch('/api/rescuer/vehicle-info')
         .then(response => response.json())
         .then(data => {
-            if (data.vehicle) {
-                vehicleData = data.vehicle;
-                const listItem = document.createElement('li');
-                listItem.innerHTML = `
-                <div>${vehicleData.id}</div>
-                <div>${vehicleData.name}</div>
-                <div>${vehicleData.status}</div>
-                <div>${vehicleData.inventory}</div>
-                <div>${vehicleData.assigned_task_id}</div>
-                <div>${vehicleData.assigned_task_type}</div>
-            `;
-
-                // Parse inventory and replace item IDs with names, including ID in parentheses
-                const inventory = JSON.parse(vehicleData.inventory || '{}');
-                let inventoryText = '';
-                for (const [itemId, quantity] of Object.entries(inventory)) {
-                    if (itemMap[itemId]) {
-                        inventoryText += `(${itemId}) ${itemMap[itemId]}: ${quantity}, `;
-                    }
-                }
-                listItem.children[3].innerText = inventoryText.slice(0, -2); // Remove the last comma and space
-                vehicleList.appendChild(listItem);
-            } else {
-                const listItem = document.createElement('li');
-                listItem.innerHTML = '<div colspan="6">No vehicle assigned</div>';
-                vehicleList.appendChild(listItem);
-            }
+            vehicleData = data.vehicle;
         })
         .catch(error => console.error('Error fetching vehicle info:', error));
+
+    // Wait for all data to be fetched before displaying
+    Promise.all([baseCoordPromise, itemsPromise, vehiclePromise])
+        .then(() => {
+            displayVehicleInfo();
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+        });
 
     // Calculate the distance between two coordinates using Haversine formula
     function calculateDistance(lat1, lon1, lat2, lon2) {

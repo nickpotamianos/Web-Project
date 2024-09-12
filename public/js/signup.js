@@ -3,6 +3,9 @@ $(document).ready(function() {
     var left, opacity, scale;
     var animating = false;
     var map, marker;
+    var registerUrl = (window.location.hostname === "localhost") ?
+        "http://localhost:3000/signup" :
+        "http://web.potamianosgroup.com:3000/signup";
 
     // Password visibility toggle
     $(".password-toggle").click(function() {
@@ -20,7 +23,7 @@ $(document).ready(function() {
         return new Promise((resolve, reject) => {
             $.ajax({
                 type: "GET",
-                url: "http://localhost:3000/check-email",
+                url: registerUrl,
                 data: { email: email },
                 success: function(response) {
                     resolve(response.exists);
@@ -159,11 +162,10 @@ $(document).ready(function() {
             current_fs.find('.error-message').text("An error occurred. Please try again.");
         });
     });
-
     function submitRegistration(data) {
         $.ajax({
             type: "POST",
-            url: "http://localhost:3000/signup",
+            url: registerUrl,
             data: data,
             success: function(response) {
                 console.log("Registration successful: ", response);

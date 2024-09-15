@@ -50,7 +50,7 @@ router.get('/offers', (req, res) => {
     const sql = `
         SELECT o.id, i.name AS item_name, o.quantity, o.date_registered, o.status, o.withdrawal_date
         FROM offers o
-        JOIN items i ON o.item_id = i.id
+                 JOIN items i ON o.item_id = i.id
         WHERE o.user_id = ?
     `;
 
@@ -64,7 +64,29 @@ router.get('/offers', (req, res) => {
     });
 });
 
+// Route to cancel an offer by ID
+router.delete('/cancel_offer/:id', (req, res) => {
+    const offerId = req.params.id;
+    const userId = req.session.user.id; // Get the logged-in user's ID
 
+    const sql = `
+        DELETE FROM offers
+        WHERE id = ? AND user_id = ? AND status = 'unassigned'
+    `;
+
+    connection.query(sql, [offerId, userId], (err, results) => {
+        if (err) {
+            console.error('Database error: ', err);
+            return res.status(500).json({ error: 'Error cancelling offer' });
+        }
+
+        if (results.affectedRows === 0) {
+            return res.status(404).json({ error: 'Offer not found or cannot be cancelled' });
+        }
+
+        res.status(200).json({ message: 'Offer cancelled successfully' });
+    });
+});
 
 // Route to submit an offer
 router.post('/offer', (req, res) => {

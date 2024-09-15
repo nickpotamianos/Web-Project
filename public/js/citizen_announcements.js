@@ -111,10 +111,46 @@ document.addEventListener('DOMContentLoaded', function() {
                         <td>${offer.status}</td>
                         <td>${offer.withdrawal_date ? new Date(offer.withdrawal_date).toLocaleString() : 'N/A'}</td>
                     `;
+
+                    // Check if the offer status is 'unassigned' to display the cancel button
+                    if (offer.status === 'unassigned') {
+                        const cancelButton = document.createElement('button');
+                        cancelButton.textContent = 'Cancel';
+                        cancelButton.onclick = function() {
+                            cancelOffer(offer.id);
+                        };
+                        const cancelButtonCell = document.createElement('td');
+                        cancelButtonCell.appendChild(cancelButton);
+                        row.appendChild(cancelButtonCell);
+                    } else {
+                        // Add an empty cell where the cancel button would normally go
+                        row.innerHTML += `<td></td>`;
+                    }
+
                     offersTableBody.appendChild(row);
                 });
             })
             .catch(error => console.error('Error fetching offers:', error));
+    }
+
+    // Function to cancel the offer
+    function cancelOffer(offerId) {
+        if (confirm('Are you sure you want to cancel this offer?')) {
+            fetch(`/api/citizen_offers/cancel_offer/${offerId}`, {
+                method: 'DELETE'
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    alert('Offer cancelled successfully!');
+                    fetchOffers(); // Refresh the list of offers
+                })
+                .catch(error => console.error('Error cancelling offer:', error));
+        }
     }
 
     // Function to open the offer modal
@@ -207,8 +243,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     }
 
-
-
     // Logout functionality
     if (logoutButton) {
         logoutButton.addEventListener('click', function() {
@@ -234,6 +268,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initial fetch of offers
     fetchOffers();
 });
+
 // Define the closeOfferModal function
 function closeOfferModal() {
     offerModal.style.display = 'none';

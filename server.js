@@ -8,11 +8,9 @@ const path = require('path');
 const fetch = require('node-fetch');
 const fileUpload = require('express-fileupload');
 
-const userRoutes = require('./routes/users');
 const itemRoutes = require('./routes/items');
 const categoryRoutes = require('./routes/categories');
 const mapdataRoutes = require('./routes/mapdata');
-const taskAssignmentRoutes = require('./routes/taskAssignment');
 const warehouseStatusRoutes = require('./routes/warehouse_status');
 const announcementRoutes = require('./routes/announcements');
 const statsRoutes = require('./routes/stats');
@@ -78,10 +76,8 @@ function isRescuer(req, res, next) {
 // Use API routes
 app.use('/api/items', itemRoutes);
 app.use('/api/categories', categoryRoutes);
-app.use('/api/users', userRoutes);
 app.use('/api/mapdata', mapdataRoutes);
 app.use('/api/bases', mapdataRoutes); // Ensure that /api/bases route is correctly used
-app.use('/api/task-assignment', taskAssignmentRoutes);
 app.use('/api/warehouse-status', warehouseStatusRoutes);
 app.use('/api/mapdata', mapdataRoutes);
 app.use('/api/announcements', announcementRoutes);

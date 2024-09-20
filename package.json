@@ -8,6 +8,8 @@
     "express-fileupload": "^1.5.1",
     "express-mysql-session": "^3.0.3",
     "express-session": "^1.18.0",
+    "leaflet": "^1.9.4",
+    "leaflet-control-geocoder": "^2.4.0",
     "mysql": "^2.18.1",
     "mysql2": "^3.11.0",
     "node-fetch": "^2.7.0"

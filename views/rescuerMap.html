@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rescuer Dashboard - Map View</title>
+    <link rel="icon" type="image/png" href="/images/logo.png">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"/>
+    <link rel="stylesheet" href="/css/styles.css"/>
+    <link rel="stylesheet" href="/css/map.css"/>
+    <link rel="stylesheet" href="/css/rescuerMap.css">
+</head>
+<body>
+<header>
+    <h1>Rescuer Dashboard</h1>
+    <nav>
+        <div class="nav-container">
+            <ul>
+                <li><a href="/rescuer_dashboard.html#vehicle-list">Vehicles</a></li>
+                <li><a href="/rescuer_dashboard.html#items-list">Items</a></li>
+                <li><a href="/rescuer_dashboard/rescuerMap.html">Map</a></li>
+            </ul>
+        </div>
+        <button id="logoutButton" class="logout-button">Logout</button>
+    </nav>
+</header>
+<div id="mapid" style="height: 500px; margin-top: 20px;"></div>
+<div id="current-tasks"></div>
+<main>
+      <h2>Current Tasks</h2>
+      <div id="task-list"></div>
+</main>
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<script src="/js/rescuer_map.js"></script>
+
+</body>
+</html>

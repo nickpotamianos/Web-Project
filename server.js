@@ -8,18 +8,23 @@ const path = require('path');
 const fetch = require('node-fetch');
 const fileUpload = require('express-fileupload');
 
-const userRoutes = require('./routes/users');
 const itemRoutes = require('./routes/items');
 const categoryRoutes = require('./routes/categories');
-const warehouseRoutes = require('./routes/warehouse');
 const mapdataRoutes = require('./routes/mapdata');
-const taskAssignmentRoutes = require('./routes/taskAssignment');
 const warehouseStatusRoutes = require('./routes/warehouse_status');
 const announcementRoutes = require('./routes/announcements');
 const statsRoutes = require('./routes/stats');
+const rescuerOperations = require('./routes/rescuerOperations'); // Import the new route file
+const rescuerMapRoutes = require('./routes/rescuerMap'); // Import the new rescuer map route file
+const rescuerManagementRoutes = require('./routes/rescuerManagement');
+const citizenOperations = require('./routes/citizen_operations');
+const citizenOffersRoutes = require('./routes/citizen_offers');
+const citizenRoutes = require('./routes/citizenRoutes');
 
 
 const app = express();
+
+
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -28,20 +33,7 @@ app.use(fileUpload());
 
 
 // Database connection
-const connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'drcp'
-});
-
-connection.connect((err) => {
-    if (err) {
-        console.error('Error connecting to the database:', err.stack);
-        return;
-    }
-    console.log('Successfully connected to the database with ID ' + connection.threadId);
-});
+const connection = require('./db');
 
 // Session store
 const sessionStore = new MySQLStore({}, connection);
@@ -73,19 +65,31 @@ function isAdmin(req, res, next) {
         res.status(403).send('Forbidden');
     }
 }
-
+// Middleware to check if the user is a rescuer
+function isRescuer(req, res, next) {
+    if (req.session.user && req.session.user.role === 'rescuer') {
+        return next();
+    } else {
+        res.status(403).send('Forbidden');
+    }
+}
 // Use API routes
 app.use('/api/items', itemRoutes);
 app.use('/api/categories', categoryRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/warehouse', warehouseRoutes);
 app.use('/api/mapdata', mapdataRoutes);
 app.use('/api/bases', mapdataRoutes); // Ensure that /api/bases route is correctly used
-app.use('/api/task-assignment', taskAssignmentRoutes);
 app.use('/api/warehouse-status', warehouseStatusRoutes);
 app.use('/api/mapdata', mapdataRoutes);
 app.use('/api/announcements', announcementRoutes);
 app.use('/api/stats', statsRoutes);
+app.use('/api/rescuer', isAuthenticated, isRescuer, rescuerOperations); // Use the new route with authentication
+app.use('/api/rescuerMap', isAuthenticated, isRescuer, rescuerMapRoutes); // Use the new rescuer map route with authentication
+app.use('/api/rescuers', isAuthenticated, rescuerManagementRoutes);
+app.use('/api/citizen_operations', isAuthenticated, citizenOperations);
+app.use('/api/citizen_offers', isAuthenticated, citizenOffersRoutes);
+app.use('/api/citizen', citizenRoutes);
+
+
 
 // Serve static files from the "public" directory
 app.use(express.static(path.join(__dirname, 'public')));
@@ -135,6 +139,20 @@ app.get('/admin_dashboard.html', isAuthenticated, isAdmin, (req, res) => {
 app.get('/admin_dashboard/map.html', isAuthenticated, isAdmin, (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'map.html'));
 });
+// ANDREAS & GREG RESCUER
+// Serve protected HTML file for rescuer dashboard
+app.get('/rescuer_dashboard', isAuthenticated, isRescuer, (req, res) => {
+    res.sendFile(path.join(__dirname, 'views', 'rescuer_dashboard.html'));
+});
+
+app.get('/rescuer_dashboard.html', isAuthenticated, isRescuer, (req, res) => {
+    res.sendFile(path.join(__dirname, 'views', 'rescuer_dashboard.html'));
+});
+
+// Serve protected HTML file for rescuer map view
+app.get('/rescuer_dashboard/rescuerMap.html', isAuthenticated, isRescuer, (req, res) => {
+    res.sendFile(path.join(__dirname, 'views', 'rescuerMap.html'));
+});
 app.get('/admin_dashboard/rescuer_management.html', isAuthenticated, isAdmin, (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'rescuer_management.html'));
 });
@@ -144,6 +162,16 @@ app.get('/admin_dashboard/announcement_creation.html', isAuthenticated, isAdmin,
 });
 app.get('/admin_dashboard/stats.html', isAuthenticated, isAdmin, (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'stats.html'));
+});
+// Serve protected HTML file for citizen dashboard
+app.get('/citizen_dashboard.html', isAuthenticated, (req, res) => {
+    res.sendFile(path.join(__dirname, 'views', 'citizen_dashboard.html'));
+});
+app.get('/citizen_dashboard/citizen_announcements.html', isAuthenticated, (req, res) => {
+    res.sendFile(path.join(__dirname, 'views', 'citizen_announcements.html'));
+});
+app.get('/citizen_dashboard/citizen_settings.html', isAuthenticated, (req, res) => {
+    res.sendFile(path.join(__dirname, 'views', 'citizen_settings.html'));
 });
 // Handle user login
 app.post('/login', (req, res) => {
@@ -164,10 +192,25 @@ app.post('/login', (req, res) => {
         if (results.length > 0) {
             const user = results[0];
             req.session.user = user;
-            return res.status(200).json({
-                message: 'Login successful',
-                role: user.role // Include the user's role in the response
-            });
+            if (user.role === 'rescuer') {
+                const vehicleSql = 'SELECT * FROM vehicles WHERE user_id = ?';
+                connection.query(vehicleSql, [user.id], (err, vehicleResults) => {
+                    if (err) {
+                        return res.status(500).json({ error: 'Error fetching vehicle information' });
+                    }
+                    const vehicle = vehicleResults[0];
+                    return res.status(200).json({
+                        message: 'Login successful',
+                        role: user.role, // Include the user's role in the response
+                        vehicle: vehicle // Include the vehicle information in the response
+                    });
+                });
+            } else {
+                return res.status(200).json({
+                    message: 'Login successful',
+                    role: user.role // Include the user's role in the response
+                });
+            }
         } else {
             return res.status(401).json({ error: 'Invalid email or password' });
         }
@@ -312,47 +355,168 @@ async function populateDatabase(data) {
 
 // Route for handling POST requests to '/signup'
 app.post('/signup', (req, res) => {
-    console.log('Received request body:', req.body); // Log request body for debugging
+    console.log('Received request body:', req.body);
 
-    const { email, pass, fname, lname, phone } = req.body;
-    const role = 'citizen'; // Default role
+    const { email, pass, fname, lname, phone, address, latitude, longitude } = req.body;
+    const role = 'citizen';
 
-    // Basic validation
-    if (!email || !pass || !fname || !lname || !phone) {
+    if (!email || !pass || !fname || !lname || !phone || !address || !latitude || !longitude) {
         console.error('Validation error: Missing required fields');
         return res.status(400).json({ error: 'Validation error: Missing required fields' });
     }
 
-    // Use a prepared statement to avoid SQL injection
-    const sql = 'INSERT INTO users (email, password, first_name, last_name, phone, role) VALUES (?, ?, ?, ?, ?, ?)';
+    const sql = 'INSERT INTO users (email, password, first_name, last_name, phone, role, address, latitude, longitude) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
 
-    connection.query(sql, [email, pass, fname, lname, phone, role], (err, results) => {
+    connection.query(sql, [email, pass, fname, lname, phone, role, address, latitude, longitude], (err, results) => {
         if (err) {
             console.error('Database error: ', err);
             res.status(500).json({ error: 'Error registering new user', details: err.message });
             return;
         }
         console.log('User registered successfully');
-        res.status(200).json({ message: 'User registered successfully' }); // Send JSON response
+        res.status(200).json({ message: 'User registered successfully' });
     });
 });
 app.post('/api/create-rescuer', isAuthenticated, isAdmin, (req, res) => {
-    const { email, password, firstName, lastName, phone } = req.body;
+    const { email, password, firstName, lastName, phone, vehicleAssignment } = req.body;
     const role = 'rescuer';
 
     // Basic validation
-    if (!email || !password || !firstName || !lastName || !phone) {
+    if (!email || !password || !firstName || !lastName || !phone || !vehicleAssignment) {
         return res.status(400).json({ error: 'All fields are required' });
     }
 
-    const sql = 'INSERT INTO users (email, password, first_name, last_name, phone, role) VALUES (?, ?, ?, ?, ?, ?)';
-
-    connection.query(sql, [email, password, firstName, lastName, phone, role], (err, results) => {
+    // Start a transaction
+    connection.beginTransaction((err) => {
         if (err) {
-            console.error('Database error: ', err);
+            console.error('Error starting transaction:', err);
             return res.status(500).json({ error: 'Error creating rescuer account' });
         }
-        res.status(201).json({ message: 'Rescuer account created successfully', userId: results.insertId });
+
+        const userSql = 'INSERT INTO users (email, password, first_name, last_name, phone, role) VALUES (?, ?, ?, ?, ?, ?)';
+
+        connection.query(userSql, [email, password, firstName, lastName, phone, role], (err, userResults) => {
+            if (err) {
+                connection.rollback(() => {
+                    console.error('Database error: ', err);
+                    res.status(500).json({ error: 'Error creating rescuer account' });
+                });
+                return;
+            }
+
+            const userId = userResults.insertId;
+
+            // Handle vehicle assignment
+            if (vehicleAssignment === 'new') {
+                createNewVehicle(userId, firstName, res);
+            } else if (vehicleAssignment !== 'unassigned') {
+                assignVehicleToUser(userId, vehicleAssignment, res);
+            } else {
+                // No vehicle assignment needed
+                commitTransaction(res, userId);
+            }
+        });
+    });
+});
+
+function createNewVehicle(userId, firstName, res) {
+    const baseSql = 'SELECT latitude, longitude FROM bases LIMIT 1';
+    connection.query(baseSql, (err, baseResults) => {
+        if (err) {
+            return connection.rollback(() => {
+                console.error('Error fetching base coordinates:', err);
+                res.status(500).json({ error: 'Error creating new vehicle' });
+            });
+        }
+
+        const { latitude, longitude } = baseResults[0];
+        const vehicleSql = 'INSERT INTO vehicles (name, status, latitude, longitude, user_id) VALUES (?, ?, ?, ?, ?)';
+        const vehicleName = `${firstName}'s Vehicle`;
+        connection.query(vehicleSql, [vehicleName, 'active', latitude, longitude, userId], (err, vehicleResults) => {
+            if (err) {
+                return connection.rollback(() => {
+                    console.error('Error creating new vehicle:', err);
+                    res.status(500).json({ error: 'Error creating new vehicle' });
+                });
+            }
+            commitTransaction(res, userId);
+        });
+    });
+}
+
+function assignVehicleToUser(userId, vehicleId, res) {
+    const assignSql = 'UPDATE vehicles SET user_id = ? WHERE id = ?';
+    connection.query(assignSql, [userId, vehicleId], (err) => {
+        if (err) {
+            connection.rollback(() => {
+                console.error('Error assigning vehicle to user:', err);
+                res.status(500).json({ error: 'Error assigning vehicle to user' });
+            });
+            return;
+        }
+        commitTransaction(res, userId);
+    });
+}
+
+function commitTransaction(res, userId) {
+    connection.commit((err) => {
+        if (err) {
+            connection.rollback(() => {
+                console.error('Error committing transaction:', err);
+                res.status(500).json({ error: 'Error creating rescuer account' });
+            });
+            return;
+        }
+        res.status(201).json({ message: 'Rescuer account created successfully', userId: userId });
+    });
+}
+
+// New endpoint to get available vehicles
+app.get('/api/vehicles', isAuthenticated, isAdmin, (req, res) => {
+    const sql = 'SELECT id, name FROM vehicles WHERE user_id IS NULL';
+    connection.query(sql, (err, results) => {
+        if (err) {
+            console.error('Error fetching vehicles:', err);
+            return res.status(500).json({ error: 'Error fetching vehicles' });
+        }
+        res.status(200).json(results);
+    });
+});
+app.get('/check-email', (req, res) => {
+    const { email } = req.query;
+
+    // Use your database connection to check if the email exists
+    const sql = 'SELECT * FROM users WHERE email = ?';
+    connection.query(sql, [email], (err, results) => {
+        if (err) {
+            console.error('Database error: ', err);
+            return res.status(500).json({ error: 'Error checking email' });
+        }
+        res.json({ exists: results.length > 0 });
+    });
+});
+app.get('/api/user/location', (req, res) => {
+    if (!req.session.user) {
+        console.error('User not logged in');
+        return res.status(401).json({ error: 'User not logged in' });
+    }
+
+    const userId = req.session.user.id;
+    console.log('Fetching location for user ID:', userId);
+
+    const sql = 'SELECT latitude, longitude FROM users WHERE id = ?';
+    connection.query(sql, [userId], (err, results) => {
+        if (err) {
+            console.error('Database error fetching user location:', err);
+            return res.status(500).json({ error: 'Error fetching user location', details: err.message });
+        }
+        if (results.length > 0) {
+            console.log('User location found:', results[0]);
+            res.json(results[0]);
+        } else {
+            console.error('User location not found for user ID:', userId);
+            res.status(404).json({ error: 'User location not found' });
+        }
     });
 });
 

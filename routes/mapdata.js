@@ -33,8 +33,7 @@ router.get('/', (req, res) => {
              WHERE FIND_IN_SET(r.id, v2.assigned_task_id) > 0 
                AND v2.assigned_task_type LIKE '%request%'
              LIMIT 1)
-        ) as vehicle, 
-        r.collection_date 
+        ) as vehicle
     FROM requests r 
     LEFT JOIN users u ON r.user_id = u.id 
     LEFT JOIN items i ON r.item_id = i.id 
@@ -137,67 +136,4 @@ router.put('/bases/:id', (req, res) => {
         res.status(200).json({ message: 'Base location updated successfully' });
     });
 });
-/*router.post('/task-assignment/assign', (req, res) => {
-    const { vehicleId, taskId, taskType } = req.body;
-
-    // Check if the vehicle exists and get its current tasks
-    const checkVehicleSql = 'SELECT assigned_task_id, assigned_task_type FROM vehicles WHERE id = ?';
-    connection.query(checkVehicleSql, [vehicleId], (err, results) => {
-        if (err) {
-            console.error('Database error checking vehicle tasks: ', err);
-            return res.status(500).json({ error: 'Error checking vehicle tasks' });
-        }
-
-        if (results.length === 0) {
-            return res.status(404).json({ error: 'Vehicle not found' });
-        }
-
-        const vehicle = results[0];
-        let assignedTasks = vehicle.assigned_task_id ? vehicle.assigned_task_id.split(',') : [];
-        let assignedTypes = vehicle.assigned_task_type ? vehicle.assigned_task_type.split(',') : [];
-
-        // Check if the task is already assigned to this vehicle
-        if (assignedTasks.includes(taskId.toString())) {
-            return res.status(400).json({ error: 'Task is already assigned to this vehicle' });
-        }
-
-        // Check if the vehicle has reached the maximum number of tasks (4)
-        if (assignedTasks.length >= 4) {
-            return res.status(400).json({ error: 'Vehicle already has the maximum number of tasks (4)' });
-        }
-
-        // Prepare the new task assignment
-        const newAssignedTaskId = vehicle.assigned_task_id ? `${vehicle.assigned_task_id},${taskId}` : taskId;
-        const newAssignedTaskType = vehicle.assigned_task_type ? `${vehicle.assigned_task_type},${taskType}` : taskType;
-
-        // Update the vehicle with the new task
-        const updateVehicleSql = `
-            UPDATE vehicles 
-            SET assigned_task_id = ?, 
-                assigned_task_type = ? 
-            WHERE id = ?`;
-        connection.query(updateVehicleSql, [newAssignedTaskId, newAssignedTaskType, vehicleId], (err, result) => {
-            if (err) {
-                console.error('Database error updating vehicle tasks: ', err);
-                return res.status(500).json({ error: 'Error updating vehicle tasks' });
-            }
-
-            // Update the task status to 'in_progress' if it was 'pending'
-            const updateTaskSql = `
-                UPDATE ${taskType}s 
-                SET status = CASE WHEN status = 'pending' THEN 'in_progress' ELSE status END, 
-                    vehicle_id = ? 
-                WHERE id = ?`;
-            connection.query(updateTaskSql, [vehicleId, taskId], (err, result) => {
-                if (err) {
-                    console.error(`Database error updating ${taskType} status: `, err);
-                    return res.status(500).json({ error: `Error updating ${taskType} status` });
-                }
-
-                res.status(200).json({ success: true, message: 'Task assigned successfully' });
-            });
-        });
-    });
-});
-*/
 module.exports = router;

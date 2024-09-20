@@ -3,7 +3,7 @@
     padding: 30px;
     height: 750px;
     margin: 20px auto;
-    max-width: 1600px;
+    max-width: 1870px;
 }
 .navitems{
     align-items: start;
@@ -225,4 +225,111 @@ button:hover {
 }
 .itemName{
     width: 50%;
+}/* Enhanced Map Styles */
+#mapid {
+    height: 780px; /* Increased height for better visibility */
+    margin-top: 20px;
+    border: none; /* Remove border for a cleaner look */
+    border-radius: 8px; /* Increased border radius */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    overflow: hidden; /* Ensure content doesn't overflow rounded corners */
+}
+
+/* Map Container */
+.map-container {
+    position: relative;
+    margin-bottom: 30px;
+}
+
+/* Map Title */
+.map-title {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: bold;
+    color: #333;
+    z-index: 1000;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Custom Leaflet Controls */
+.leaflet-control-zoom {
+    border: none !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2) !important;
+}
+
+.leaflet-control-zoom a {
+    background-color: white !important;
+    color: #333 !important;
+    transition: all 0.3s ease;
+}
+
+.leaflet-control-zoom a:hover {
+    background-color: #f4f4f4 !important;
+    color: #000 !important;
+}
+
+/* Custom Layer Control */
+.leaflet-control-layers {
+    border: none !important;
+    border-radius: 8px !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Refresh Button */
+.refresh-button {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 20px;
+    transition: background-color 0.3s, transform 0.2s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.refresh-button:hover {
+    background-color: #2980b9;
+    transform: translateY(-2px);
+}
+
+.refresh-button:active {
+    transform: translateY(0);
+}
+
+/* Task List Enhancement */
+
+
+#current-tasks h2 {
+    margin-top: 0;
+    color: #2c3e50;
+    font-size: 1.5em;
+}
+
+.task-box {
+    background-color: white;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.task-box:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    #mapid {
+        height: 400px; /* Smaller height for mobile devices */
+    }
+
+    .map-title {
+        font-size: 14px;
+        padding: 6px 12px;
+    }
 }

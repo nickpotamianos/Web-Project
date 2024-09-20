@@ -157,6 +157,54 @@ label {
     color: white;
 }
 
+.password-container {
+    position: relative;
+}
 
+.password-toggle {
+    position: absolute;
+    right: 10px;
+    top: 25%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: white;
+    text-shadow: 0 0 3px rgba(0, 0, 0, 0.5); /* This adds a subtle shadow for better visibility */
+}
 
+.error-message {
+    color: red;
+    margin-top: 5px;
+    font-size: 14px;
+}
+#address-suggestions {
+    position: absolute;
+    z-index: 1000;
+    background: white;
+    border: 1px solid #ccc;
+    max-height: 150px;
+    overflow-y: auto;
+    width: 80%;
+    box-sizing: border-box;
+}
+
+#address-suggestions div {
+    padding: 5px;
+    cursor: pointer;
+}
+
+#address-suggestions div:hover {
+    background-color: #f0f0f0;
+}
+
+#map-container {
+    position: relative;
+    height: 300px;
+    width: 300px;
+    margin-bottom: 10px;
+}
+
+#map {
+    height: 100%;
+    width: 100%;
+}
 

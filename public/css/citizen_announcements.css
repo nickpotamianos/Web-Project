@@ -1,0 +1,135 @@
+/* Announcements Section Styling */
+#announcementsContainer {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+#announcementsContainer div {
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+#announcementsContainer div:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+#announcementsContainer h3 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+#announcementsContainer p {
+    font-size: 1rem;
+    margin-bottom: 10px;
+    color: #666;
+}
+
+#announcementsContainer ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+#announcementsContainer li {
+    margin: 10px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#announcementsContainer li button {
+    background-color: #6495ed;
+    color: white;
+    width: 150px;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#announcementsContainer li button:hover {
+    background-color: #5679c4;
+}
+
+/* General Table Styling */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: #f2f2f2;
+    color: #333;
+}
+
+tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* Offer Modal Styling */
+#offerModal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    z-index: 1000;
+    width: 90%;
+    max-width: 400px;
+}
+
+#offerModal h3 {
+    margin-bottom: 20px;
+    color: #333;
+}
+
+#offerForm {
+    display: flex;
+    flex-direction: column;
+}
+
+#offerForm label {
+    margin-bottom: 5px;
+    color: #555;
+}
+
+#offerForm input {
+    margin-bottom: 15px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+
+#offerModal button {
+    margin-top: 10px;
+    background-color: #333;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#offerModal button:hover {
+    background-color: #555;
+}
+

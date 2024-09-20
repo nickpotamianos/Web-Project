@@ -6,8 +6,9 @@
     <link rel="icon" type="image/png" href="/images/logo.png">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
+    <link rel="stylesheet" href="/css/login_signup.css">
     <link href="/css/styles.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link href="/css/signup.css" rel="stylesheet">
 
 </head>
@@ -42,22 +43,39 @@
             <h2 class="fs-title">Create your account</h2>
             <h3 class="fs-subtitle">Please fill below</h3>
             <input type="text" name="email" placeholder="Email" />
-            <input type="password" name="pass" placeholder="Password" />
-            <input type="password" name="cpass" placeholder="Confirm Password" />
+            <div class="password-container">
+                <input type="password" name="pass" placeholder="Password" />
+                <i class="fa fa-eye-slash password-toggle" aria-hidden="true"></i>
+            </div>
+            <div class="password-container">
+                <input type="password" name="cpass" placeholder="Confirm Password" />
+                <i class="fa fa-eye-slash password-toggle" aria-hidden="true"></i>
+            </div>
+            <div class="error-message"></div>
             <input type="button" name="next" class="next action-button" value="Next" />
         </fieldset>
+
         <fieldset>
             <h2 class="fs-title">Personal Details</h2>
             <h3 class="fs-subtitle">We will never sell it</h3>
             <input type="text" name="fname" placeholder="First Name" />
             <input type="text" name="lname" placeholder="Last Name" />
             <input type="text" name="phone" placeholder="Phone" />
-            <input type="button" class="finish action-button" value="Register" />
+            <input type="text" name="address" id="address" placeholder="Address" />
+            <div id="map" style="height: 200px; margin-bottom: 10px;"></div>
+            <input type="hidden" name="latitude" id="latitude" />
+            <input type="hidden" name="longitude" id="longitude" />
+            <div class="error-message"></div>
+            <input type="submit" name="finish" class="finish action-button" value="Submit" />
         </fieldset>
         </form>
 </div>
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
 <script src="/js/signup.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
 </body>
 </html>

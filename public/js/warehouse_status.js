@@ -26,6 +26,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (!data || typeof data !== 'object') {
                     throw new Error('Invalid data received from server');
                 }
+                //An object holding two arrays: categories and items.
+                // This structure mirrors the data received from the server.
                 warehouseData = {
                     categories: data.categories || [],
                     items: data.items || []

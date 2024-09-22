@@ -8,12 +8,16 @@
     <link rel="stylesheet" href="/css/rescuer_dashboard.css">
     <link rel="stylesheet" href="/css/styles.css">
     <link rel="stylesheet" href="/css/admin_dashboard.css">
+    <link rel="stylesheet" href="/css/rescuer_dashboard.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="/js/hamburger.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
         #mapid { height: 400px; width: 100%; }
         .data-list { width: 100%; list-style-type: none; padding: 0; }
         .data-list li { display: flex; border: 1px solid #000; padding: 5px; }
         .data-list li div { flex: 1; }
+
     </style>
 </head>
 <body>
@@ -21,13 +25,25 @@
     <h1>Rescuer Dashboard</h1>
     <nav>
         <div class="nav-container">
-            <ul>
+            <div class="logo">
+                <a href="/rescuer_dashboard.html">
+                    <img src="/images/logo.png" alt="Logo">
+                </a>
+            </div>
+            <!-- Hamburger Menu Button -->
+            <button class="hamburger" aria-label="Toggle navigation" aria-expanded="false" aria-controls="primary-navigation">
+                <i class="fas fa-bars"></i>
+            </button>
+            <ul class="nav-links" id="primary-navigation">
                 <li><a href="/rescuer_dashboard.html#vehicle-list">Vehicles</a></li>
                 <li><a href="/rescuer_dashboard.html#items-list">Items</a></li>
                 <li><a href="/rescuer_dashboard/rescuerMap.html">Map</a></li>
+                <!-- Mobile Logout Button -->
+                <li class="logout-mobile"><a href="#" id="logoutMobile">Logout</a></li>
             </ul>
+            <!-- Desktop Logout Button -->
+            <button id="logoutButton" class="logout-button">Logout</button>
         </div>
-        <button id="logoutButton" class="logout-button">Logout</button>
     </nav>
 </header>
 <main>

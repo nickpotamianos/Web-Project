@@ -2,6 +2,8 @@ body {
     font-family: Arial, sans-serif;
     background-color: #f4f4f4;
     color: #333;
+    margin: 0;
+    padding: 0;
 }
 
 header {
@@ -13,60 +15,129 @@ header {
 header h1 {
     margin: 0;
     text-align: center;
+    font-size: 24px;
 }
 
 nav {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     padding: 0 20px;
+    position: relative;
+    z-index: 2000;
 }
 
 .nav-container {
-    flex-grow: 1;
     display: flex;
-    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
-nav ul {
+.logo img {
+    width: 50px;
+    height: 50px;
+}
+
+.nav-links {
     list-style: none;
-    padding-left: 60px;
     display: flex;
-    margin: 0;
-    justify-content: center;
+    margin-left: auto;
+    align-items: center;
+    height: auto;
 }
 
-nav ul li {
-    margin: 0 5px; /* Decrease margin between items */
+.nav-links li {
+    margin-left: 20px;
 }
 
-nav ul li a {
-    color: #fff;
+.nav-links a {
+    color: white;
     text-decoration: none;
-    padding: 8px 15px; /* Adjust padding for a more compact look */
+    padding: 8px 15px;
     border-radius: 5px;
+    transition: background 0.3s;
+    font-size: 16px;
 }
 
-nav ul li a:hover {
+.nav-links a:hover {
     background-color: #615e5e;
     color: white;
 }
 
+/* Logout Button for Desktop */
 .logout-button {
-    background-color: #c53131; /* Red background */
-    color: white; /* White text */
+    background-color: #c53131;
+    color: white;
     border: none;
     padding: 10px 20px;
     text-align: center;
     text-decoration: none;
     font-size: 16px;
     cursor: pointer;
-    flex-shrink: 0;
-    width: auto; /* Auto width */
+    margin-left: 20px;
+    border-radius: 5px;
+    width: auto;
+}
+.logout-mobile {
+    background-color: #c53131;
+    color: white;
+    border: none;
+    padding: 0px 10px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 16px;
+    cursor: pointer;
+    margin-left: 20px;
+    border-radius: 5px;
+    width: auto;
 }
 
 .logout-button:hover {
-    background-color: #831e1e; /* Darker red on hover */
+    background-color: #831e1e;
+}
+
+/* Hide .logout-mobile by default (Desktop) */
+.logout-mobile {
+    display: none;
+}
+
+/* Show .logout-mobile and hide .logout-button on Mobile Devices */
+@media only screen and (max-width: 768px) {
+    /* Hide the desktop logout button on mobile */
+    .logout-button {
+        display: none;
+    }
+
+    /* Show the mobile logout button within the hamburger menu */
+    .logout-mobile {
+        display: block;
+    }
+
+    /* Stack Action Buttons Vertically in Items on Mobile */
+    .item {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+    }
+
+    .item button {
+        width: 100% !important;
+        margin: 5px 0 0 0 !important;
+    }
+
+    /* Popup Content Adjustment */
+    .popup-content {
+        width: 80%;
+    }
+}
+
+/* Ensure .logout-mobile is hidden on larger screens to prevent duplication */
+@media only screen and (min-width: 769px) {
+    .logout-mobile {
+        display: none !important;
+    }
 }
 
 main {
@@ -92,6 +163,7 @@ input, select, button {
     margin-bottom: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
+    box-sizing: border-box;
 }
 
 button {
@@ -99,21 +171,13 @@ button {
     color: #fff;
     border: none;
     cursor: pointer;
+    font-size: 16px;
+    transition: background 0.3s;
 }
 
 button:hover {
     background-color: #555;
 }
-
-.category {
-    padding: 10px;
-    background-color: #f9f9f9;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    margin-bottom: 5px;
-    cursor: pointer;
-}
-
 .item-container {
     margin-bottom: 20px;
     padding-left: 20px;
@@ -129,17 +193,16 @@ button:hover {
     border-radius: 5px;
     margin-bottom: 5px;
 }
-
-
 .category {
+    padding: 10px;
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 5px;
+    cursor: pointer;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px;
-    border: 1px solid #ccc;
-    margin-bottom: 5px;
-    background-color: #f9f9f9;
-    vertical-align: center;
 }
 
 .delete-category {
@@ -149,6 +212,8 @@ button:hover {
     padding: 5px 10px;
     cursor: pointer;
     flex-shrink: 0;
+    border-radius: 5px;
+    font-size: 14px;
     width: auto;
 }
 
@@ -158,32 +223,289 @@ button:hover {
 
 .update-quantity {
     background-color: #2575fc;
-    width: auto;
+    border: none;
+    color: white;
+    padding: 5px 10px;
+    cursor: pointer;
+    flex-shrink: 0;
+    border-radius: 5px;
+    font-size: 14px;
 }
 
 .update-quantity:hover {
     background-color: #1f5fd1;
 }
+
 .update-details{
     background-color: green;
-    width: auto;
+    border: none;
+    color: white;
+    padding: 5px 10px;
+    cursor: pointer;
+    flex-shrink: 0;
+    border-radius: 5px;
+    font-size: 14px;
 }
+
 .update-details:hover{
     background-color: darkgreen;
 }
+
 .item-quantity {
-    width: auto;
+    width: 60px;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
 }
 
 .delete-item {
     background-color: #c53131;
-    width: auto;
+    border: none;
+    color: white;
+    padding: 5px 10px;
+    cursor: pointer;
+    flex-shrink: 0;
+    border-radius: 5px;
+    font-size: 14px;
 }
 
 .delete-item:hover {
     background-color: #831e1e;
-    width: auto;
 }
+
 .itemName{
     width: 50%;
+    word-break: break-word;
+}
+
+/* Popup Styles */
+.popup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 1000;
+}
+
+.popup-content {
+    background-color: white;
+    padding: 20px;
+    margin: 50px auto;
+    width: 50%;
+    max-width: 500px;
+    border-radius: 10px;
+    position: relative;
+}
+
+.popup-content h3 {
+    margin-top: 0;
+}
+
+.popup-content form {
+    display: flex;
+    flex-direction: column;
+}
+
+.popup-content input[type="text"] {
+    margin-bottom: 10px;
+    padding: 8px;
+    font-size: 14px;
+}
+
+.popup-content button {
+    padding: 8px;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+.popup-content #addDetailButton {
+    background-color: #2575fc;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.popup-content #addDetailButton:hover {
+    background-color: #1f5fd1;
+}
+
+.popup-content #submitUpdate {
+    background-color: green;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.popup-content #submitUpdate:hover {
+    background-color: darkgreen;
+}
+
+.popup-content #closePopup {
+    background-color: #c53131;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+.popup-content #closePopup:hover {
+    background-color: #831e1e;
+}
+
+/* Responsive Styles */
+@media only screen and (max-width: 768px) {
+    .nav-links {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        background-color: #333;
+        position: absolute;
+        top: 60px;
+        left: 0;
+    }
+
+    .nav-links.active {
+        display: flex;
+    }
+
+    .nav-links li {
+        margin: 10px 0;
+        text-align: center;
+    }
+
+    .hamburger {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: none;
+        border: none;
+        color: white;
+        font-size: 24px;
+        cursor: pointer;
+        margin-left: auto;
+    }
+
+    /* Hide Logout Button on Mobile */
+    .logout-button {
+        display: none;
+    }
+
+    /* Show Logout in Hamburger Menu on Mobile */
+    .logout-mobile {
+        display: block;
+    }
+
+    main {
+        padding: 10px;
+    }
+
+    form {
+        margin-bottom: 15px;
+    }
+
+    input, select, button {
+        padding: 8px;
+        font-size: 14px;
+    }
+
+    /* Stack Action Buttons Vertically in Items on Mobile */
+    .item {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+    }
+
+    .item button {
+        width: 100% !important;
+        margin: 5px 0 0 0 !important;
+    }
+
+    /* Popup Content Adjustment */
+    .popup-content {
+        width: 80%;
+    }
+}
+
+@media only screen and (max-width: 480px) {
+    header h1 {
+        font-size: 20px;
+    }
+
+    nav ul {
+        list-style: none;
+        padding-left: 0;
+
+        nav ul li a {
+            font-size: 14px;
+            padding: 8px 10px;
+        }
+
+        .logout-button {
+            padding: 8px 10px;
+            font-size: 14px;
+        }
+
+        main {
+            padding: 5px;
+        }
+
+        form {
+            margin-bottom: 10px;
+        }
+
+        input, select, button {
+            padding: 6px;
+            font-size: 12px;
+        }
+
+        /* Adjust Font Size for Password Toggle Icons if applicable */
+
+        .password-container i {
+            font-size: 12px;
+        }
+
+        /* Popup Content Adjustment */
+
+        .popup-content {
+            width: 90%;
+        }
+    }
+
+    /* Additional Styles for Dynamically Generated Elements */
+    .item-container {
+        margin-bottom: 20px;
+        padding-left: 20px;
+    }
+
+    .item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 5px 10px;
+        background-color: #e9e9e9;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin-bottom: 5px;
+        width: auto;
+    }
+
+    .item span {
+        flex: 1;
+    }
+
+    .item button {
+        margin-left: 5px;
+    }
+
+    /* Scrollbar Styles for Popup */
+    .popup-content {
+        overflow-y: auto;
+        max-height: 80vh;
+    }
 }

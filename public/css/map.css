@@ -1,13 +1,492 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: #333;
+    color: #fff;
+    padding: 10px 0;
+}
+
+header h1 {
+    margin: 0;
+    text-align: center;
+    font-size: 24px;
+}
+
+nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 20px;
+    position: relative;
+    z-index: 2000;
+}
+
+.nav-container {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.logo img {
+    width: 50px;
+    height: 50px;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    margin-left: auto;
+    align-items: center;
+    height: auto;
+}
+
+.nav-links li {
+    margin-left: 20px;
+}
+
+.nav-links a {
+    color: white;
+    text-decoration: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    transition: background 0.3s;
+    font-size: 16px;
+}
+
+.nav-links a:hover {
+    background-color: #615e5e;
+    color: white;
+}
+
+/* Logout Button for Desktop */
+.logout-button {
+    background-color: #c53131;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 16px;
+    cursor: pointer;
+    margin-left: 20px;
+    border-radius: 5px;
+    width: auto;
+}
+
+.logout-button:hover {
+    background-color: #831e1e;
+}
+
+/* Hide .logout-mobile by default (Desktop) */
+.logout-mobile {
+    display: none;
+}
+
+/* Show .logout-mobile and hide .logout-button on Mobile Devices */
+@media only screen and (max-width: 768px) {
+    /* Hide the desktop logout button on mobile */
+    .logout-button {
+        display: none;
+    }
+
+    /* Show the mobile logout button within the hamburger menu */
+    .logout-mobile {
+        display: block;
+    }
+
+    /* Stack Action Buttons Vertically in Items on Mobile */
+    .item {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+    }
+
+    .item button {
+        width: 100% !important;
+        margin: 5px 0 0 0 !important;
+    }
+
+    /* Popup Content Adjustment */
+    .popup-content {
+        width: 80%;
+    }
+}
+
+/* Ensure .logout-mobile is hidden on larger screens to prevent duplication */
+@media only screen and (min-width: 769px) {
+    .logout-mobile {
+        display: none !important;
+    }
+}
+
+main {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    margin-top: 0;
+}
+
+form {
+    margin-bottom: 20px;
+}
+
+input, select, button {
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+button {
+    background-color: #333;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background 0.3s;
+}
+
+button:hover {
+    background-color: #555;
+}
+
+.category {
+    padding: 10px;
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 5px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.delete-category {
+    background-color: #c53131;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    flex-shrink: 0;
+    border-radius: 5px;
+    font-size: 14px;
+    width: auto;
+}
+
+.delete-category:hover {
+    background-color: #831e1e;
+}
+
+.update-quantity {
+    background-color: #2575fc;
+    border: none;
+    color: white;
+    padding: 5px 10px;
+    cursor: pointer;
+    flex-shrink: 0;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.update-quantity:hover {
+    background-color: #1f5fd1;
+}
+
+.update-details{
+    background-color: green;
+    border: none;
+    color: white;
+    padding: 5px 10px;
+    cursor: pointer;
+    flex-shrink: 0;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.update-details:hover{
+    background-color: darkgreen;
+}
+
+.item-quantity {
+    width: 60px;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.delete-item {
+    background-color: #c53131;
+    border: none;
+    color: white;
+    padding: 5px 10px;
+    cursor: pointer;
+    flex-shrink: 0;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.delete-item:hover {
+    background-color: #831e1e;
+}
+
+.itemName{
+    width: 50%;
+    word-break: break-word;
+}
+
+/* Popup Styles */
+.popup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 1000;
+}
+
+.popup-content {
+    background-color: white;
+    padding: 20px;
+    margin: 50px auto;
+    width: 50%;
+    max-width: 500px;
+    border-radius: 10px;
+    position: relative;
+}
+
+.popup-content h3 {
+    margin-top: 0;
+}
+
+.popup-content form {
+    display: flex;
+    flex-direction: column;
+}
+
+.popup-content input[type="text"] {
+    margin-bottom: 10px;
+    padding: 8px;
+    font-size: 14px;
+}
+
+.popup-content button {
+    padding: 8px;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+.popup-content #addDetailButton {
+    background-color: #2575fc;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.popup-content #addDetailButton:hover {
+    background-color: #1f5fd1;
+}
+
+.popup-content #submitUpdate {
+    background-color: green;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.popup-content #submitUpdate:hover {
+    background-color: darkgreen;
+}
+
+.popup-content #closePopup {
+    background-color: #c53131;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+.popup-content #closePopup:hover {
+    background-color: #831e1e;
+}
+
+/* Responsive Styles */
+@media only screen and (max-width: 768px) {
+    .nav-links {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        background-color: #333;
+        position: absolute;
+        top: 60px;
+        left: 0;
+    }
+
+    .nav-links.active {
+        display: flex;
+    }
+
+    .nav-links li {
+        margin: 10px 0;
+        text-align: center;
+    }
+
+    .hamburger {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: none;
+        border: none;
+        color: white;
+        font-size: 24px;
+        cursor: pointer;
+        margin-left: auto;
+    }
+
+    /* Hide Logout Button on Mobile */
+    .logout-button {
+        display: none;
+    }
+
+    /* Show Logout in Hamburger Menu on Mobile */
+    .logout-mobile {
+        display: block;
+    }
+
+    main {
+        padding: 10px;
+    }
+
+    form {
+        margin-bottom: 15px;
+    }
+
+    input, select, button {
+        padding: 8px;
+        font-size: 14px;
+    }
+
+    /* Stack Action Buttons Vertically in Items on Mobile */
+    .item {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+    }
+
+    .item button {
+        width: 100% !important;
+        margin: 5px 0 0 0 !important;
+    }
+
+    /* Popup Content Adjustment */
+    .popup-content {
+        width: 80%;
+    }
+}
+
+@media only screen and (max-width: 480px) {
+    header h1 {
+        font-size: 20px;
+    }
+
+    nav ul {
+        list-style: none;
+        padding-left: 0;
+
+        nav ul li a {
+            font-size: 14px;
+            padding: 8px 10px;
+        }
+
+        .logout-button {
+            padding: 8px 10px;
+            font-size: 14px;
+        }
+
+        main {
+            padding: 5px;
+        }
+
+        form {
+            margin-bottom: 10px;
+        }
+
+        input, select, button {
+            padding: 6px;
+            font-size: 12px;
+        }
+
+        /* Adjust Font Size for Password Toggle Icons if applicable */
+
+        .password-container i {
+            font-size: 12px;
+        }
+
+        /* Popup Content Adjustment */
+
+        .popup-content {
+            width: 90%;
+        }
+    }
+
+    /* Additional Styles for Dynamically Generated Elements */
+    .item-container {
+        margin-bottom: 20px;
+        padding-left: 20px;
+    }
+
+    .item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 5px 10px;
+        background-color: #e9e9e9;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin-bottom: 5px;
+        width: auto;
+    }
+
+    .item span {
+        flex: 1;
+    }
+
+    .item button {
+        margin-left: 5px;
+    }
+
+    /* Scrollbar Styles for Popup */
+    .popup-content {
+        overflow-y: auto;
+        max-height: 80vh;
+    }
+}
+
 #mapid {
     background-color: #333333;
-    padding: 30px;
-    height: 750px;
-    margin: 20px auto;
-    max-width: 1870px;
+    height: 650px;
+    max-width: 2000px;
 }
-.navitems{
-    align-items: start;
-}
+
 .leaflet-tile-pane {
     filter: grayscale(100%) brightness(105%);
 }
@@ -24,24 +503,7 @@
     filter: brightness(110%) saturate(30%);
 }
 
-/* Legend styling */
-.legend {
-    padding: 6px 8px;
-    font: 14px Arial, Helvetica, sans-serif;
-    background: white;
-    background: rgba(255, 255, 255, 0.8);
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-    border-radius: 5px;
-    line-height: 24px;
-    color: #555;
-}
-.legend i {
-    width: 18px;
-    height: 18px;
-    float: left;
-    margin-right: 8px;
-    opacity: 0.7;
-}
+
 
 /* Simplify roads */
 .leaflet-tile-pane img[src*="highway"] {
@@ -57,175 +519,7 @@
 .leaflet-tile-pane img[src*="landuse"] {
     filter: brightness(110%) saturate(30%);
 }
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
-    color: #333;
-}
-
-header {
-    background-color: #333;
-    color: #fff;
-    padding: 10px 0;
-}
-
-header h1 {
-    margin: 0;
-    text-align: center;
-}
-
-nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 20px;
-}
-
-.nav-container {
-    flex-grow: 1;
-    display: flex;
-    justify-content: center;
-}
-
-nav ul {
-    list-style: none;
-    padding-left: 60px;
-    display: flex;
-    margin: 0;
-    justify-content: center;
-}
-
-nav ul li {
-    margin: 0 5px; /* Decrease margin between items */
-}
-
-nav ul li a {
-    color: #fff;
-    text-decoration: none;
-    padding: 8px 15px; /* Adjust padding for a more compact look */
-    border-radius: 5px;
-}
-
-nav ul li a:hover {
-    background-color: #615e5e;
-    color: white;
-}
-
-.logout-button {
-    background-color: #c53131; /* Red background */
-    color: white; /* White text */
-    border: none;
-    padding: 10px 20px;
-    text-align: center;
-    text-decoration: none;
-    font-size: 16px;
-    cursor: pointer;
-    flex-shrink: 0;
-    width: auto; /* Auto width */
-}
-
-.logout-button:hover {
-    background-color: #831e1e; /* Darker red on hover */
-}
-
-
-h2 {
-    margin-top: 0;
-}
-
-form {
-    margin-bottom: 20px;
-}
-
-input, select, button {
-    padding: 10px;
-    margin-bottom: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-}
-
-
-
-button:hover {
-    background-color: #555;
-}
-
-.category {
-    padding: 10px;
-    background-color: #f9f9f9;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    margin-bottom: 5px;
-    cursor: pointer;
-}
-
-.item-container {
-    margin-bottom: 20px;
-    padding-left: 20px;
-}
-
-.item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 5px 10px;
-    background-color: #e9e9e9;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    margin-bottom: 5px;
-}
-
-
-.category {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    border: 1px solid #ccc;
-    margin-bottom: 5px;
-    background-color: #f9f9f9;
-    vertical-align: center;
-}
-
-.delete-category {
-    background-color: #c53131;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    cursor: pointer;
-    flex-shrink: 0;
-    width: auto;
-}
-
-.delete-category:hover {
-    background-color: #831e1e;
-}
-
-.update-quantity {
-    background-color: #2575fc;
-    width: auto;
-}
-
-.update-quantity:hover {
-    background-color: #1f5fd1;
-}
-
-.item-quantity {
-    width: auto;
-}
-
-.delete-item {
-    background-color: #c53131;
-    width: auto;
-}
-
-.delete-item:hover {
-    background-color: #831e1e;
-    width: auto;
-}
-.itemName{
-    width: 50%;
-}/* Enhanced Map Styles */
+/* Enhanced Map Styles */
 #mapid {
     height: 780px; /* Increased height for better visibility */
     margin-top: 20px;
@@ -241,20 +535,7 @@ button:hover {
     margin-bottom: 30px;
 }
 
-/* Map Title */
-.map-title {
-    position: absolute;
-    top: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: rgba(255, 255, 255, 0.8);
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-weight: bold;
-    color: #333;
-    z-index: 1000;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
+
 
 /* Custom Leaflet Controls */
 .leaflet-control-zoom {
@@ -271,13 +552,6 @@ button:hover {
 .leaflet-control-zoom a:hover {
     background-color: #f4f4f4 !important;
     color: #000 !important;
-}
-
-/* Custom Layer Control */
-.leaflet-control-layers {
-    border: none !important;
-    border-radius: 8px !important;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2) !important;
 }
 
 /* Refresh Button */
@@ -332,4 +606,10 @@ button:hover {
         font-size: 14px;
         padding: 6px 12px;
     }
+}
+main{
+    padding: 0;
+    margin : 10px 10px 10px 10px;
+    max-width: 3000px;
+    border-radius: 8px;
 }

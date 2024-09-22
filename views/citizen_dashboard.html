@@ -16,21 +16,36 @@
     <script src="/js/citizen_dashboard.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="/js/hamburger.js"></script>
     <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <script src="/js/mobileLogout.js"></script>
+
 </head>
 <body>
-
 <header>
     <h1>Citizen Dashboard</h1>
     <nav>
         <div class="nav-container">
-            <ul>
+            <div class="logo">
+                <a href="/citizen_dashboard.html">
+                    <img src="/images/logo.png" alt="Logo">
+                </a>
+            </div>
+            <!-- Hamburger Menu Button -->
+            <button class="hamburger" aria-label="Toggle navigation" aria-expanded="false" aria-controls="primary-navigation">
+                <i class="fas fa-bars"></i>
+            </button>
+            <ul class="nav-links" id="primary-navigation">
                 <li><a href="/citizen_dashboard.html">Requests</a></li>
                 <li><a href="/citizen_dashboard/citizen_announcements.html">Offers</a></li>
                 <li><a href="/citizen_dashboard/citizen_settings.html">Edit profile</a></li>
+                <!-- Mobile Logout Button -->
+                <li class="logout-mobile"><a href="#" id="logoutMobile">Logout</a></li>
             </ul>
+            <!-- Desktop Logout Button -->
+            <button id="logoutButton" class="logout-button">Logout</button>
         </div>
-        <button id="logoutButton" class="logout-button">Logout</button>
     </nav>
 </header>
 

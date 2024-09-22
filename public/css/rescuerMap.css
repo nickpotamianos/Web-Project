@@ -67,7 +67,6 @@ button {
 .completed {
     background-color: #2ecc71;
     color: white;
-    margin-right: 10px;
 }
 
 .completed:hover {
@@ -77,6 +76,7 @@ button {
 .cancelled {
     background-color: #e74c3c;
     color: white;
+
 }
 
 .cancelled:hover {
@@ -92,4 +92,28 @@ button {
         margin-right: 0;
         margin-bottom: 10px;
     }
+}
+input, select, button {
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+.logout-mobile {
+    background-color: #c53131;
+    color: white;
+    border: none;
+    padding: 0px 10px;
+    padding-top: 0px;
+    padding-right: 10px;
+    padding-bottom: 0px;
+    padding-left: 10px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 16px;
+    cursor: pointer;
+    margin-left: 20px;
+    border-radius: 5px;
+    width: auto;
 }

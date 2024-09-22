@@ -1,4 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;1,100;1,200;1,300;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;1,100;1,200;1,300;1,400&display=swap');
+
 html {
     height: 100%;
 }
@@ -208,3 +210,189 @@ label {
     width: 100%;
 }
 
+html {
+    height: 100%;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center; /* Align the links vertically */
+    list-style-type: none; /* Remove bullet points from list */
+}
+
+.nav-links li {
+    margin-left: 20px; /* Adjust spacing between links */
+}
+
+.nav-links a {
+    text-decoration: none; /* Remove underline from links */
+    color: white; /* Adjust color as needed */
+    /* Add other styles such as font-size, font-family, etc. */
+}
+
+.register-box {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 90%;
+    max-width: 400px;
+    padding: 40px;
+    transform: translate(-50%, -50%);
+    background: rgba(0,0,0,0.5);
+    box-sizing: border-box;
+    box-shadow: 0 15px 25px rgba(0,0,0,0.6);
+    border-radius: 10px;
+}
+
+.register-box h2 {
+    margin: 0 0 30px;
+    padding: 0;
+    color: #fff;
+    text-align: center;
+}
+
+.register-box .user-box {
+    position: relative;
+}
+
+input {
+    width: 100%;
+    padding: 10px 0;
+    font-size: 16px;
+    color: #fff;
+    margin-bottom: 30px;
+    border: none;
+    border-bottom: 1px solid #fff;
+    outline: none;
+    background: transparent;
+}
+
+label {
+    position: absolute;
+    top:0;
+    left: 0;
+    padding: 10px 0;
+    font-size: 16px;
+    color: #fff;
+    pointer-events: none;
+    transition: .5s;
+}
+
+#msform {
+    text-align: center;
+    position: relative;
+}
+
+#msform fieldset {
+    border: 0 none;
+    padding: 20px 30px;
+    box-sizing: border-box;
+    width: 80%;
+    margin: 0 10%;
+    position: relative;
+}
+
+#msform fieldset:not(:first-of-type) {
+    display: none;
+}
+
+#msform .action-button {
+    width: 100%;
+    background: #6495ed;
+    font-weight: bold;
+    color: white;
+    border: 0 none;
+    border-radius: 7px;
+    cursor: pointer;
+    padding: 10px;
+    margin: 10px 0;
+    text-decoration: none;
+    font-size: 14px;
+    transition: background 0.3s ease;
+}
+
+#msform .action-button:hover, #msform .action-button:focus {
+    background: #5679c4;
+}
+
+.fs-title {
+    font-size: 15px;
+    text-transform: uppercase;
+    color: #2C3E50;
+    margin-bottom: 10px;
+}
+
+.fs-subtitle {
+    font-weight: normal;
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.password-container {
+    position: relative;
+}
+
+.error-message {
+    color: red;
+    margin-top: 5px;
+    font-size: 14px;
+}
+
+#address-suggestions {
+    position: absolute;
+    z-index: 1000;
+    background: white;
+    border: 1px solid #ccc;
+    max-height: 150px;
+    overflow-y: auto;
+    width: 80%;
+    box-sizing: border-box;
+}
+
+#address-suggestions div {
+    padding: 5px;
+    cursor: pointer;
+}
+
+#address-suggestions div:hover {
+    background-color: #f0f0f0;
+}
+
+#map-container {
+    position: relative;
+    height: 300px;
+    width: 300px;
+    margin-bottom: 10px;
+}
+
+#map {
+    height: 100%;
+    width: 100%;
+}
+
+/* Mobile Responsiveness */
+@media only screen and (max-width: 768px) {
+    .register-box {
+        padding: 30px;
+    }
+
+    .form input[type="submit"],
+    .form .action-button {
+        font-size: 14px;
+        padding: 8px;
+    }
+}
+
+@media only screen and (max-width: 480px) {
+    .register-box {
+        width: 95%;
+        padding: 20px;
+    }
+
+    .form input[type="submit"],
+    .form .action-button {
+        font-size: 12px;
+        padding: 6px;
+    }
+}

@@ -1,3 +1,4 @@
+/* Existing desktop styles */
 body {
     font-family: Arial, sans-serif;
     background-color: #f4f4f4;
@@ -15,43 +16,6 @@ header {
 header h1 {
     margin: 0;
     text-align: center;
-}
-
-nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 20px;
-}
-
-.nav-container {
-    flex-grow: 1;
-    display: flex;
-    justify-content: center;
-}
-
-nav ul {
-    list-style: none;
-    padding-left: 60px;
-    display: flex;
-    margin: 0;
-    justify-content: center;
-}
-
-nav ul li {
-    margin: 0 5px;
-}
-
-nav ul li a {
-    color: #fff;
-    text-decoration: none;
-    padding: 8px 15px;
-    border-radius: 5px;
-}
-
-nav ul li a:hover {
-    background-color: #615e5e;
-    color: white;
 }
 
 .logout-button:hover {
@@ -187,18 +151,146 @@ th[data-sort="desc"] .sort-indicator {
     border-top: 5px solid #333;
 }
 
-@media (max-width: 768px) {
-    .checkbox-group {
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+/* Mobile-specific styles */
+@media (max-width: 600px) {
+    body, html {
+        height: 100%;
+        overflow: hidden;
     }
-}
 
-@media (max-width: 480px) {
+    body {
+        display: flex;
+        flex-direction: column;
+    }
+    header h1 {
+        font-size: 20px;
+    }
+
+    main {
+        flex: 1;
+        overflow-y: auto;
+        margin: 0;
+        padding: 10px;
+        max-width: none;
+        box-shadow: none;
+    }
+
+    #category-filter {
+        padding: 10px;
+        margin-bottom: 10px;
+    }
+
+    #category-filter h3 {
+        font-size: 1em;
+        margin: 0;
+    }
+
     .checkbox-group {
-        grid-template-columns: 1fr;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        margin-top: 10px;
+    }
+
+    #warehouse-table {
+        font-size: 0.8em;
     }
 
     #warehouse-table th, #warehouse-table td {
+        padding: 1px;
+    }
+
+    .checkbox-item {
+        font-size: 0.8em;
+    }
+
+    #warehouse-table th {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+
+    /* Hide scrollbar for Chrome, Safari and Opera */
+    main::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* Hide scrollbar for IE, Edge and Firefox */
+    main {
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
+    }
+}
+/* Responsive Styles */
+@media only screen and (max-width: 768px) {
+    .nav-links {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        background-color: #333;
+        position: absolute;
+        top: 60px;
+        left: 0;
+    }
+
+    .nav-links.active {
+        display: flex;
+    }
+
+    .nav-links li {
+        margin: 10px 0;
+        text-align: center;
+    }
+
+    .hamburger {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: none;
+        border: none;
+        color: white;
+        font-size: 24px;
+        cursor: pointer;
+        margin-left: auto;
+    }
+
+    /* Hide Logout Button on Mobile */
+    .logout-button {
+        display: none;
+    }
+
+    /* Show Logout in Hamburger Menu on Mobile */
+    .logout-mobile {
+        display: block;
+    }
+
+    main {
+        padding: 10px;
+    }
+
+    form {
+        margin-bottom: 15px;
+    }
+
+    input, select, button {
         padding: 8px;
+        font-size: 14px;
+    }
+
+    /* Stack Action Buttons Vertically in Items on Mobile */
+    .item {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+    }
+
+    .item button {
+        width: 100% !important;
+        margin: 5px 0 0 0 !important;
+    }
+
+    /* Popup Content Adjustment */
+    .popup-content {
+        width: 80%;
     }
 }

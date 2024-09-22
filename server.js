@@ -1,3 +1,4 @@
+// Arxikopoiisi tou Express app
 const express = require('express');
 const bodyParser = require('body-parser');
 const mysql = require('mysql2');
@@ -7,7 +8,7 @@ const MySQLStore = require('express-mysql-session')(session);
 const path = require('path');
 const fetch = require('node-fetch');
 const fileUpload = require('express-fileupload');
-
+// Import routes
 const itemRoutes = require('./routes/items');
 const categoryRoutes = require('./routes/categories');
 const mapdataRoutes = require('./routes/mapdata');

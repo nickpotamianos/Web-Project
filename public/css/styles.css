@@ -9,7 +9,10 @@ body, h1, h2, h3, p, a {
     font-family: 'Roboto', sans-serif;
 }
 
-
+body {
+    line-height: 1.6;
+    font-size: 16px;
+}
 
 /* Hero section with animation */
 .hero-section {
@@ -22,13 +25,13 @@ body, h1, h2, h3, p, a {
     width: 40px;
     height: 40px;
 }
+
 .tent {
     width: 30px;
     height: 30px;
 }
 
 .overlay {
-
     background-color: rgba(0, 0, 0, 0.7);
     height: 100%;
     width: 100%;
@@ -43,7 +46,10 @@ body, h1, h2, h3, p, a {
 nav {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     padding: 1rem 2rem;
+    position: relative; /* Ensure positioning context for z-index */
+    z-index: 100; /* Base z-index for nav */
 }
 
 nav.sticky {
@@ -52,10 +58,15 @@ nav.sticky {
     top: 0;
     left: 0;
     right: 0;
-    background-color: rgba(0, 0, 0, 0.5); /* or any other color with transparency */
-    z-index: 100; /* Ensure it's above other content */
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 100;
 }
 
+.nav-links {
+    list-style: none;
+    display: flex;
+    /* Ensure nav-links are visible on desktop */
+}
 
 .nav-links li {
     display: inline;
@@ -67,6 +78,9 @@ nav.sticky {
     padding: 10px;
     border-radius: 5px;
     transition: background 0.3s;
+    color: #fff;
+    text-decoration: none;
+    text-transform: uppercase;
 }
 
 .nav-links li a .login-icon {
@@ -81,19 +95,13 @@ nav.sticky {
     background: rgba(80, 80, 80, 0.7);
 }
 
-.nav-links a {
-    color: #fff;
-    text-decoration: none;
-    text-transform: uppercase;
-}
-
 .hero-content {
     position: static;
     text-align: center;
     color: white;
     animation: enterScreen 1s ease-out forwards;
     padding-bottom: 30px;
-    }
+}
 
 @keyframes enterScreen {
     0% {
@@ -107,7 +115,7 @@ nav.sticky {
 }
 
 .cta {
-    background-color: #6495ed; /* Logo color */
+    background-color: #6495ed;
     border: none;
     color: white;
     padding: 10px 25px;
@@ -120,17 +128,17 @@ nav.sticky {
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
     display: inline-block;
     cursor: pointer;
-    margin-top:15px;
+    margin-top: 15px;
 }
 
 .cta:hover {
-    background-color: #5679c4; /* A darker shade for hover effect */
+    background-color: #5679c4;
     box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.3);
     transform: translateY(-2px);
 }
 
 .cta:active {
-    background-color: #3d5a80; /* An even darker shade for active state */
+    background-color: #3d5a80;
     box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
     transform: translateY(1px);
 }
@@ -159,6 +167,7 @@ nav.sticky {
     transform: translateY(-10px);
 }
 
+/* Scrollbar Styles */
 ::-webkit-scrollbar {
     width: 4px;
     height: 4px;
@@ -172,19 +181,157 @@ nav.sticky {
     background: rgba(0, 0, 0, 0.2);
 }
 
-
-
 /* Footer */
 footer {
     background-color: #333;
     color: #fff;
     text-align: center;
     padding: 1rem;
+    font-size: 1rem;
 }
 
-/* Responsive design */
+/* Responsive Navigation */
+.hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 30px;
+    height: 25px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    position: relative; /* Added for z-index */
+    z-index: 101; /* Higher than .nav-links */
+}
+
+.hamburger span {
+    width: 100%;
+    height: 3px;
+    background-color: #fff;
+    border-radius: 2px;
+    transition: all 0.3s linear;
+}
+
+@media only screen and (max-width: 1200px) {
+    .grid-section {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media only screen and (max-width: 1024px) {
+    .hero-content h1 {
+        font-size: 2.5rem;
+    }
+
+    .hero-content p {
+        font-size: 1.1rem;
+    }
+
+    body {
+        font-size: 15px;
+    }
+}
+
 @media only screen and (max-width: 768px) {
+    .nav-links {
+        position: fixed;
+        right: 0;
+        height: 100vh;
+        top: 0;
+        background-color: rgba(0, 0, 0, 0.9);
+        flex-direction: column;
+        align-items: center;
+        width: 60%;
+        transform: translateX(100%);
+        transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+        opacity: 0;
+        z-index: 100; /* Lower than .hamburger */
+    }
+
+    .nav-links.active {
+        transform: translateX(0);
+        opacity: 1;
+    }
+
+    .nav-links li {
+        margin: 2rem 0;
+    }
+
+    .nav-links a {
+        font-size: 1.5rem;
+    }
+
+    .hamburger {
+        display: flex;
+    }
+
+    /* Hamburger Animation when active */
+    .hamburger.active span:nth-child(1) {
+        transform: rotate(45deg) translate(5px, 5px);
+    }
+
+    .hamburger.active span:nth-child(2) {
+        opacity: 0;
+    }
+
+    .hamburger.active span:nth-child(3) {
+        transform: rotate(-45deg) translate(5px, -5px);
+    }
+
     .grid-section {
         grid-template-columns: 1fr;
     }
+
+    .hero-content h1 {
+        font-size: 2rem;
+    }
+
+    .hero-content p {
+        font-size: 1rem;
+    }
+
+    body {
+        font-size: 14px;
+    }
+
+    .cta {
+        padding: 12px 30px;
+        font-size: 15px;
+    }
+}
+
+@media only screen and (max-width: 480px) {
+    .hero-content h1 {
+        font-size: 1.5rem;
+    }
+
+    .hero-content p {
+        font-size: 0.9rem;
+    }
+
+    .cta {
+        padding: 10px 20px;
+        font-size: 14px;
+    }
+
+    .logo img {
+        width: 30px;
+        height: 30px;
+    }
+
+    body {
+        font-size: 13px;
+    }
+
+    footer {
+        font-size: 0.9rem;
+        padding: 0.8rem;
+    }
+}
+
+/* Responsive Images */
+img {
+    max-width: 100%;
+    height: auto;
 }

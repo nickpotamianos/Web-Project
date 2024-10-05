@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Register</title>
+    <link rel="icon" type="image/png" href="/images/logo.png">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="/css/login_signup.css">
+    <link href="/css/styles.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link href="/css/signup.css" rel="stylesheet">
+
+</head>
+
+<body>
+<header class="hero-section">
+    <div class="overlay">
+        <nav>
+            <div class="logo">
+                <a href="../index.html">
+                    <img src="/images/logo.png" alt="Logo">
+                </a>
+            </div>
+
+            <!-- Hamburger Menu Button -->
+            <button class="hamburger" aria-label="Toggle navigation" aria-expanded="false" aria-controls="primary-navigation">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
+            <ul class="nav-links">
+                <li><a href="../index.html"><img src="/images/home.png" alt="Home" class="tent"></a></li>
+                <li><a href="login.html">Login<img src="/images/login2.png" alt="Login Icon" class="login-icon"></a></li>
+            </ul>
+        </nav>
+    </div>
+</header>
+<div class="register-box">
+    <!-- multistep form -->
+    <form id="msform" class="form">
+        <!-- progressbar -->
+        <ul id="progressbar">
+            <li class="active">Account Setup</li>
+            <li>Personal Details</li>
+        </ul>
+        <!-- fieldsets -->
+        <fieldset>
+            <h2 class="fs-title">Create your account</h2>
+            <h3 class="fs-subtitle">Please fill below</h3>
+            <input type="text" name="email" placeholder="Email" />
+            <div class="password-container">
+                <input type="password" name="pass" placeholder="Password" />
+                <i class="fa fa-eye-slash password-toggle" aria-hidden="true"></i>
+            </div>
+            <div class="password-container">
+                <input type="password" name="cpass" placeholder="Confirm Password" />
+                <i class="fa fa-eye-slash password-toggle" aria-hidden="true"></i>
+            </div>
+            <div class="error-message"></div>
+            <input type="button" name="next" class="next action-button" value="Next" />
+        </fieldset>
+
+        <fieldset>
+            <h2 class="fs-title">Personal Details</h2>
+            <h3 class="fs-subtitle">We will never sell it</h3>
+            <input type="text" name="fname" placeholder="First Name" />
+            <input type="text" name="lname" placeholder="Last Name" />
+            <input type="text" name="phone" placeholder="Phone" />
+            <input type="text" name="address" id="address" placeholder="Address" />
+            <div id="map" style="height: 200px; margin-bottom: 10px;"></div>
+            <input type="hidden" name="latitude" id="latitude" />
+            <input type="hidden" name="longitude" id="longitude" />
+            <div class="error-message"></div>
+            <input type="submit" name="finish" class="finish action-button" value="Submit" />
+        </fieldset>
+        </form>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
+<script src="/js/signup.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+<script src='/js/hamburger.js'></script>
+</body>
+</html>

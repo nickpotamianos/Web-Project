@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rescuer Dashboard</title>
+    <link rel="icon" type="image/png" href="/images/logo.png">
+    <link rel="stylesheet" href="/css/rescuer_dashboard.css">
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/admin_dashboard.css">
+    <link rel="stylesheet" href="/css/rescuer_dashboard.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="/js/hamburger.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        #mapid { height: 400px; width: 100%; }
+        .data-list { width: 100%; list-style-type: none; padding: 0; }
+        .data-list li { display: flex; border: 1px solid #000; padding: 5px; }
+        .data-list li div { flex: 1; }
+
+    </style>
+</head>
+<body>
+<header>
+    <h1>Rescuer Dashboard</h1>
+    <nav>
+        <div class="nav-container">
+            <div class="logo">
+                <a href="/rescuer_dashboard.html">
+                    <img src="/images/logo.png" alt="Logo">
+                </a>
+            </div>
+            <!-- Hamburger Menu Button -->
+            <button class="hamburger" aria-label="Toggle navigation" aria-expanded="false" aria-controls="primary-navigation">
+                <i class="fas fa-bars"></i>
+            </button>
+            <ul class="nav-links" id="primary-navigation">
+                <li><a href="/rescuer_dashboard.html#vehicle-list">Vehicles</a></li>
+                <li><a href="/rescuer_dashboard.html#items-list">Items</a></li>
+                <li><a href="/rescuer_dashboard/rescuerMap.html">Map</a></li>
+                <!-- Mobile Logout Button -->
+                <li class="logout-mobile"><a href="#" id="logoutMobile">Logout</a></li>
+            </ul>
+            <!-- Desktop Logout Button -->
+            <button id="logoutButton" class="logout-button">Logout</button>
+        </div>
+    </nav>
+</header>
+<main>
+    <section id="vehicles">
+        <h2>Vehicles</h2>
+        <ul id="vehicle-list" class="data-list">
+            <li>
+                <div>ID</div>
+                <div>Name</div>
+                <div>Status</div>
+                <div>(Item ID) Inventory</div>
+                <div>Assigned Task ID</div>
+                <div>Assigned Task Type</div>
+            </li>
+            <!-- Vehicle data will be dynamically inserted here -->
+        </ul>
+        <button id="load-button">Load Items</button>
+        <button id="unload-button">Unload Items</button>
+    </section>
+
+    <section id="items">
+        <h2>Items</h2>
+        <ul id="items-list" class="data-list">
+            <li>
+                <div>ID</div>
+                <div>Name</div>
+                <div>Category ID</div>
+                <div>Quantity</div>
+            </li>
+            <!-- Items data will be dynamically inserted here -->
+        </ul>
+    </section>
+
+</main>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="/js/rescuer_dashboard.js"></script>
+<script src="/js/admin_dashboard.js"></script>
+<script src="/js/fixed-buttons.js"></script>
+</body>
+</html>

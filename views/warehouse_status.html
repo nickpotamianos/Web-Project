@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warehouse Status - Admin Dashboard</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/warehouse_status.css">
+    <link rel="stylesheet" href="/css/admin_dashboard.css">
+    <link rel="stylesheet" href="/css/warehouse_status.css">
+    <link rel="icon" type="image/png" href="/images/logo.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body>
+<header>
+    <h1>Admin Dashboard</h1>
+    <nav>
+        <div class="nav-container">
+            <div class="logo">
+                <a href="/admin_dashboard.html">
+                    <img src="/images/logo.png" alt="Logo">
+                </a>
+            </div>
+            <!-- Hamburger Menu Button -->
+            <button class="hamburger" aria-label="Toggle navigation" aria-expanded="false" aria-controls="primary-navigation">
+                <i class="fas fa-bars"></i>
+            </button>
+            <ul class="nav-links" id="primary-navigation">
+                <li><a href="/admin_dashboard.html">Items</a></li>
+                <li><a href="/admin_dashboard/map.html">Map View</a></li>
+                <li><a href="/admin_dashboard/warehouse_status.html">Warehouse Status</a></li>
+                <li><a href="/admin_dashboard/rescuer_management.html">Rescuer Management</a></li>
+                <li><a href="/admin_dashboard/announcement_creation.html">Announcements</a></li>
+                <li><a href="/admin_dashboard/stats.html">Stats</a></li>
+                <!-- Mobile Logout Button -->
+                <li class="logout-mobile"><a href="#" id="logoutMobile">Logout</a></li>
+            </ul>
+            <!-- Desktop Logout Button -->
+            <button id="logoutButton" class="logout-button">Logout</button>
+        </div>
+    </nav>
+</header>
+<main role="main">
+    <h2>Warehouse Status</h2>
+
+    <div id="category-filter">
+        <h3>Filter by Category <span id="toggle-filter">▼</span></h3>
+        <div id="category-list" class="checkbox-group">
+            <!-- Checkboxes will be dynamically added here -->
+        </div>
+    </div>
+
+    <table id="warehouse-table">
+        <thead>
+        <tr>
+            <th>Item Name</th>
+            <th>Category</th>
+            <th>Quantity in Base</th>
+            <th>Quantity in Vehicles</th>
+            <th>Total Quantity</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- Table rows will be dynamically added here -->
+        </tbody>
+    </table>
+</main>
+<script src="/js/warehouse_status.js"></script>
+<script src="/js/admin_dashboard.js"></script>
+<script src="/js/hamburger.js"></script>
+</body>
+</html>

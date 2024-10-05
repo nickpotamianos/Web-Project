@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Log In</title>
+    <link rel="icon" type="image/png" href="/images/logo.png">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="/css/login_signup.css">
+    <link href="/css/styles.css" rel="stylesheet">
+    <link href="/css/signup.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+</head>
+
+<body>
+<header class="hero-section">
+    <div class="overlay">
+        <nav>
+            <div class="logo">
+                <a href="../index.html">
+                    <img src="/images/logo.png" alt="Logo">
+                </a>
+            </div>
+            <!-- Hamburger Menu Button -->
+            <button class="hamburger" aria-label="Toggle navigation" aria-expanded="false" aria-controls="primary-navigation">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-links">
+                <li><a href="../index.html"><img src="/images/home.png" alt="Home" class="tent"></a></li>
+                <li><a href="signup.html">Register</a></li>
+            </ul>
+        </nav>
+    </div>
+</header>
+<div class="register-box">
+    <!-- multistep form -->
+    <form id="msform" class="form">
+        <!-- fieldsets -->
+        <fieldset>
+            <h2 class="fs-title">Login to your account</h2>
+            <h3 class="fs-subtitle">Please fill below</h3>
+            <input type="text" name="email" placeholder="Email" />
+            <div class="password-container">
+                <input type="password" name="pass" placeholder="Password" />
+                <i class="fa fa-eye-slash password-toggle" aria-hidden="true"></i>
+            </div>
+            <input type="button" name="Log In" class="next action-button" value="Login" />
+        </fieldset>
+    </form>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="/js/login.js"></script> <!-- Ensure this points to login.js -->
+<script src="/js/hamburger.js"></script>
+</body>
+</html>

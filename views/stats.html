@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service Statistics</title>
+    <link rel="icon" type="image/png" href="/images/logo.png">
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/admin_dashboard.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body>
+<header>
+    <h1>Admin Dashboard</h1>
+    <nav>
+        <div class="nav-container">
+            <div class="logo">
+                <a href="/admin_dashboard.html">
+                    <img src="/images/logo.png" alt="Logo">
+                </a>
+            </div>
+            <!-- Hamburger Menu Button -->
+            <button class="hamburger" aria-label="Toggle navigation" aria-expanded="false" aria-controls="primary-navigation">
+                <i class="fas fa-bars"></i>
+            </button>
+            <ul class="nav-links" id="primary-navigation">
+                <li><a href="/admin_dashboard.html">Items</a></li>
+                <li><a href="/admin_dashboard/map.html">Map View</a></li>
+                <li><a href="/admin_dashboard/warehouse_status.html">Warehouse Status</a></li>
+                <li><a href="/admin_dashboard/rescuer_management.html">Rescuer Management</a></li>
+                <li><a href="/admin_dashboard/announcement_creation.html">Announcements</a></li>
+                <li><a href="/admin_dashboard/stats.html">Stats</a></li>
+                <!-- Mobile Logout Button -->
+                <li class="logout-mobile"><a href="#" id="logoutMobile">Logout</a></li>
+            </ul>
+            <!-- Desktop Logout Button -->
+            <button id="logoutButton" class="logout-button">Logout</button>
+        </div>
+    </nav>
+</header>
+
+<main>
+    <h1>Service Statistics</h1>
+    <div>
+        <label for="startDate">Start Date:</label>
+        <input type="date" id="startDate">
+        <label for="endDate">End Date:</label>
+        <input type="date" id="endDate">
+        <button id="updateChart">Update Chart</button>
+    </div>
+    <canvas id="statsChart"></canvas>
+</main>
+<script src="/js/hamburger.js"></script>
+<script src="/js/stats.js"></script>
+<script src="/js/mobileLogout.js"></script>
+</body>
+</html>
